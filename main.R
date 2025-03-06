@@ -1,7 +1,7 @@
 library(dplyr)
 
 # import raw file
-data_raw = read.csv('Music_streaming_raw_data.csv')
+data_raw = read.csv('raw_data.csv')
 data_raw
 str(data_raw)
 
@@ -41,5 +41,5 @@ data <- data %>%
     weekly_hours = ifelse(is.na(weekly_hours), median(weekly_hours, na.rm = TRUE), weekly_hours))
 
 
-write.csv(data,"clean_data.csv")
+write.csv(data,"cleaned_data.csv")
 
