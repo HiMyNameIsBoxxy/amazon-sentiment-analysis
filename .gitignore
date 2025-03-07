@@ -6,6 +6,3 @@
 
 # Ignore everything inside the data/ folder
 data/
-
-# Ignore a specific CSV file
-Amazon_Reviews_Processed.csv
