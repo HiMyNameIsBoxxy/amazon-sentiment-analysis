@@ -246,7 +246,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 </section>
 <section id="data-exploration" class="level1">
-<h1><strong>Data Exploration</strong></h1>
+<h1>Data Exploration</h1>
 <p>This code block is designed to <strong>optimize memory usage and improve computational efficiency</strong> when working with a large dataset containing Amazon product reviews. The dataset has over <strong>3.1 million observations</strong>, making memory optimization crucial for smooth data processing and analysis. The code achieves this by converting columns to <strong>appropriate data types</strong>, such as:</p>
 <ul>
 <li><p><strong><code>overall</code> (ratings) → <code>integer</code></strong> to reduce memory compared to storing it as numeric.</p></li>
@@ -286,8 +286,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </code></pre>
 </div>
 </div>
-<section id="dataset-summary" class="level3">
-<h3 class="anchored" data-anchor-id="dataset-summary">Dataset Summary</h3>
+<section id="dataset-summary" class="level2">
+<h2 class="anchored" data-anchor-id="dataset-summary">Dataset Summary</h2>
 <p>The purpose of this block of code is to <strong>provide a comprehensive summary of the dataset</strong> before performing any further analysis. It helps to <strong>understand the structure, distribution, and composition of the data</strong> by computing key statistics such as numerical summaries, categorical distributions, and data types.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load dataset</span></span>
@@ -392,12 +392,12 @@ negative  neutral positive
  594643  784274 1748268 </code></pre>
 </div>
 </div>
-<section id="data-imbalance" class="level4">
-<h4 class="anchored" data-anchor-id="data-imbalance">Data Imbalance</h4>
+<section id="data-imbalance" class="level3">
+<h3 class="anchored" data-anchor-id="data-imbalance">Data Imbalance</h3>
 <p>The dataset consists of <strong>3,127,185 reviews</strong> across <strong>multiple product categories</strong> such as <strong>Books, Electronics, Beauty, and Fashion</strong>. The <strong><code>overall</code> rating</strong> shows a median value of <code>5.0</code>, indicating that the dataset is <strong>skewed towards positive reviews</strong>. This is further supported by the <strong>sentiment distribution</strong>, where <strong>2,874,077 (92%) of the reviews are positive</strong>, compared to <strong>125,878 neutral reviews and 127,230 negative reviews</strong>. This suggests a potential <strong>imbalance in sentiment</strong>, which may need adjustment if used for predictive modeling.</p>
 </section>
-<section id="review-length-difference" class="level4">
-<h4 class="anchored" data-anchor-id="review-length-difference">Review Length Difference</h4>
+<section id="review-length-difference" class="level3">
+<h3 class="anchored" data-anchor-id="review-length-difference">Review Length Difference</h3>
 <p>The <strong>category distribution</strong> shows that some categories, like <strong>Books (630,000 reviews)</strong> and <strong>Clothing, Shoes, and Jewelry (270,000 reviews)</strong>, have significantly more reviews than smaller categories such as <strong>Appliances (1,557 reviews)</strong>. Additionally, the <strong>review length distribution</strong> reveals that most reviews are <strong>small (1,748,268)</strong>, while medium-length and large reviews make up a smaller portion. This suggests that the majority of customer feedback is <strong>brief</strong>, which could impact text-based sentiment analysis. Understanding these distributions helps us determine whether <strong>resampling, data balancing, or filtering</strong> is necessary for fair and accurate analysis.</p>
 <ul>
 <li><p>If some categories <strong>dominate the dataset</strong>, analysis might be <strong>biased</strong> toward those categories.</p></li>
@@ -405,9 +405,9 @@ negative  neutral positive
 <li><p>It helps in making <strong>business and research decisions</strong>, such as identifying which product types receive more customer engagement.</p></li>
 </ul>
 </section>
-</section>
 <section id="section" class="level3">
 <h3 class="anchored" data-anchor-id="section"></h3>
+</section>
 </section>
 </section>
 

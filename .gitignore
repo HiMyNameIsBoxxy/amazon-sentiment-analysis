@@ -1,5 +1,11 @@
+# Ignore R project and workspace files
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
-data
+
+# Ignore everything inside the data/ folder
+data/
+
+# Ignore a specific CSV file
+Amazon_Reviews_Processed.csv
