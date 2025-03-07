@@ -1,0 +1,224 @@
+---
+title: "main"
+format: html
+editor: visual
+---
+
+## Test
+
+bla bla bla
+
+# Data Cleaning
+
+This dataset contains a vast collection of Amazon product reviews and metadata across 29 categories, totaling over 75.29 million reviews from the year of 2018. The data was collected by scraping Amazon's review pages and includes detailed information about each product and its associated reviews.
+
+### K-cores
+
+These data have been reduced to extract the [k-core](https://en.wikipedia.org/wiki/Degeneracy_(graph_theory)), such that each of the remaining users and items have k reviews each. This shrinks the size of the dataset to fit the purpose of this project.
+
+```{r, eval=FALSE}
+# Warning! Do not run this code block if you already have Amazon_Reviews_Processed.csv file
+
+library(data.table) # Used for fast data loading and manipulation.
+library(stringr) # Provides useful string functions.
+
+# Define thresholds for review length
+length_thresholds <- list(small = 128, medium = 256, large = 512)
+
+# Define function to categorize sentiment
+categorize_sentiment <- function(overall) {
+  if (overall %in% c(1, 2)) {
+    return("negative")
+  } else if (overall == 3) {
+    return("neutral")
+  } else {
+    return("positive")
+  }
+}
+
+# Define function to categorize review length
+categorize_length <- function(text) {
+  if (is.na(text) || text == "") {
+    return(NA)  # Return NA for missing or empty values
+  }
+  
+  length <- nchar(as.character(text))  # Convert text to character before measuring length
+  
+  if (length <= length_thresholds$small) {
+    return("small")
+  } else if (length <= length_thresholds$medium) {
+    return("medium")
+  } else if (length <= length_thresholds$large) {
+    return("large")
+  } else {
+    return("outlier")
+  }
+}
+
+# List all CSV files in the dataset directory
+# We loop through multiple CSV files so that we can process all review data, not just one file.
+dataset_path <- "data"  # Change this to your dataset path
+files <- list.files(dataset_path, pattern = "*.csv", full.names = TRUE)
+
+# Initialize an empty data.table to store the processed data
+final_data <- data.table()
+
+# Loop through each file and process data
+for (file in files) {
+  cat("Processing:", file, "\n")
+  
+  # Read CSV file
+  df <- fread(file)
+  
+  # Ensure column names are correct
+  # This check ensures data integrity by skipping files that lack required information.
+  if (!("overall" %in% names(df)) || !("reviewText" %in% names(df))) {
+    cat("Skipping file due to missing columns:", file, "\n")
+    next
+  }
+
+  # Apply sentiment and length categorization
+  # Converts numerical ratings into sentiment labels (positive, neutral, negative).
+Categorizes reviews into size categories (small, medium, large).
+  df[, sentiment := sapply(overall, categorize_sentiment)]
+  df[, length := sapply(reviewText, categorize_length)]
+
+  # Remove outlier reviews (long or empty reviews)
+  df <- df[length != "outlier"]
+
+  # Initialize list for balanced sampling
+  samples <- list()
+
+  # Loop through each sentiment category
+  for (sentiment in c("negative", "neutral", "positive")) {
+    sentiment_data <- df[sentiment == sentiment]
+
+    # Loop through each length category
+    for (length in c("small", "medium", "large")) {
+      length_data <- sentiment_data[length == length]
+
+      # Resample data (max 10,000 per category)
+      if (nrow(length_data) > 0) {
+        sampled_data <- length_data[sample(.N, min(.N, 10000))]
+        samples <- append(samples, list(sampled_data))
+      }
+    }
+  }
+
+  # Combine samples
+  category_samples <- rbindlist(samples, fill = TRUE)
+
+  # Print statistics for current category
+  cat("Category:", str_remove(basename(file), "_5.csv"), "\n")
+  cat("Total Samples:", nrow(category_samples), "\n")
+  cat("Length Counts:", table(category_samples$length), "\n")
+  cat("Sentiment Counts:", table(category_samples$sentiment), "\n")
+  cat("--------------------------------------------------\n")
+
+  # Append to final dataset
+  final_data <- rbind(final_data, category_samples, fill = TRUE)
+}
+
+# Save final processed dataset
+fwrite(final_data, "Amazon_Reviews_Processed.csv")
+
+cat("Data processing complete! Saved to Amazon_Reviews_Processed.csv\n")
+
+```
+
+### Define Length Thresholds for Reviews
+
+-   We **categorize reviews based on length** to analyze how review length correlates with sentiment.
+-   **Short reviews** might have different sentiments compared to **longer reviews**.
+
+### Categorize Sentiment
+
+-   Star ratings (`overall`) serve as **a proxy for sentiment**.
+-   This function converts **numerical ratings into categorical labels** (`negative`, `neutral`, `positive`).
+
+### Categorize Review Length
+
+-   Reviews are of **varying lengths**, and some could be **too long (outliers)**.
+-   **Text length affects sentiment analysis**—short reviews may be more **emotional**, while long ones may be more **descriptive**.
+
+### Balance the Dataset
+
+Some categories might have **too many or too few reviews**, so we:
+
+-   **Resample up to 10,000** reviews per category.
+
+-   Ensure **each sentiment (`negative`, `neutral`, `positive`) is evenly distributed**.
+
+# Data Exploration
+
+This code block is designed to **optimize memory usage and improve computational efficiency** when working with a large dataset containing Amazon product reviews. The dataset has over **3.1 million observations**, making memory optimization crucial for smooth data processing and analysis. The code achieves this by converting columns to **appropriate data types**, such as:
+
+-   **`overall` (ratings) → `integer`** to reduce memory compared to storing it as numeric.
+
+-   **`category`, `asin`, `length`, and `sentiment` → `factor`** to store categorical values efficiently instead of character strings.
+
+-   **`reviewText` and `summary` → `character`** since they are text-based and do not need factor encoding. By making these conversions, the dataset requires less memory and ensures that **operations like filtering, grouping, and analysis run faster**.
+
+```{r}
+library(data.table)  # Efficient data handling
+
+# Load dataset
+data <- fread("Amazon_Reviews_Processed.csv")
+
+# Convert data types for memory optimization
+data[, overall := as.integer(overall)]            # Convert ratings to integer
+data[, category := as.factor(category)]          # Convert categorical data to factor
+data[, reviewText := as.character(reviewText)]   # Convert review text to string
+data[, summary := as.character(summary)]         # Convert summary to string
+data[, asin := as.factor(asin)]                  # Convert product ID to factor
+data[, length := as.factor(length)]              # Convert length category to factor
+data[, sentiment := as.factor(sentiment)]        # Convert sentiment to factor
+
+# Check memory usage after conversion
+print(object.size(data), units = "MB")  # Print memory usage in MB
+str(data)  # Display structure of the dataset
+
+```
+
+## Dataset Summary
+
+The purpose of this block of code is to **provide a comprehensive summary of the dataset** before performing any further analysis. It helps to **understand the structure, distribution, and composition of the data** by computing key statistics such as numerical summaries, categorical distributions, and data types.
+
+```{r}
+# Load dataset
+data <- fread("Amazon_Reviews_Processed.csv")
+
+# Display numeric statistics (like Python's describe())
+print("📊 Basic Statistics:")
+summary(data)
+
+# Display structure of the dataset (similar to .info())
+print("🔍 Data Structure:")
+str(data)
+
+# Display frequency counts for categorical variables
+print("📌 Category Distribution:")
+print(table(data$category))
+
+print("📌 Sentiment Distribution:")
+print(table(data$sentiment))
+
+print("📌 Length Category Distribution:")
+print(table(data$length))
+```
+
+### Data Imbalance
+
+The dataset consists of **3,127,185 reviews** across **multiple product categories** such as **Books, Electronics, Beauty, and Fashion**. The **`overall` rating** shows a median value of `5.0`, indicating that the dataset is **skewed towards positive reviews**. This is further supported by the **sentiment distribution**, where **2,874,077 (92%) of the reviews are positive**, compared to **125,878 neutral reviews and 127,230 negative reviews**. This suggests a potential **imbalance in sentiment**, which may need adjustment if used for predictive modeling.
+
+### Review Length Difference
+
+The **category distribution** shows that some categories, like **Books (630,000 reviews)** and **Clothing, Shoes, and Jewelry (270,000 reviews)**, have significantly more reviews than smaller categories such as **Appliances (1,557 reviews)**. Additionally, the **review length distribution** reveals that most reviews are **small (1,748,268)**, while medium-length and large reviews make up a smaller portion. This suggests that the majority of customer feedback is **brief**, which could impact text-based sentiment analysis. Understanding these distributions helps us determine whether **resampling, data balancing, or filtering** is necessary for fair and accurate analysis.
+
+-   If some categories **dominate the dataset**, analysis might be **biased** toward those categories.
+
+-   If a category has **too few reviews**, it may need **oversampling or exclusion** to ensure statistical significance.
+
+-   It helps in making **business and research decisions**, such as identifying which product types receive more customer engagement.
+
+### 

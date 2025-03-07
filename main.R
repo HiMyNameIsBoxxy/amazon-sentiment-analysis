@@ -5,6 +5,8 @@ data_raw = read.csv('raw_data.csv')
 data_raw
 str(data_raw)
 
+########## overview ########## 
+
 # check NAs
 sum(is.na(data_raw[1:20]))
 
@@ -27,7 +29,7 @@ data <- data %>%
   mutate(across(where(is.character), as.factor))
 data
 
-# mutate signup_actual_date and days_since_signup
+# mutate signup_actual_date and days_since_signup for readability
 data <- data %>%
   mutate(
     signup_actual_date = as.Date(Sys.Date()) + signup_date,
