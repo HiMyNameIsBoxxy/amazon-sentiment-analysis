@@ -1,16 +1,99 @@
 ---
-title: "main"
-format: html
-editor: visual
+title: "Amazon Sentiment Analysis"
+format: 
+  html:
+    toc: true
+    theme: cosmo
+    sidebar: true
 ---
 
-## Test
+# Overview
 
-bla bla bla
+## **Inspiration**
+
+This dataset can be used to build and evaluate machine learning models, such as sentiment analysis, product recommendation engines, and trend analysis tools. It is particularly useful for natural language processing (NLP) projects and big data analysis.
 
 # Data Cleaning
 
 This dataset contains a vast collection of Amazon product reviews and metadata across 29 categories, totaling over 75.29 million reviews from the year of 2018. The data was collected by scraping Amazon's review pages and includes detailed information about each product and its associated reviews. **Source Link:** <https://amazon-reviews-2023.github.io/>
+
+### File Information
+
+The dataset is organized into 29 CSV files, each corresponding to a different product category. Each file contains reviews and associated metadata.
+
+-   **Amazon_Fashion.csv**: 883,636 reviews
+
+-   **All_Beauty.csv**: 371,345 reviews
+
+-   **Appliances.csv**: 602,777 reviews
+
+-   **Arts_Crafts_and_Sewing.csv**: 2,875,917 reviews
+
+-   **Automotive.csv**: 7,990,166 reviews
+
+-   **Books.csv**: 51,311,621 reviews
+
+-   **CDs_and_Vinyl.csv**: 4,543,369 reviews
+
+-   **Cell_Phones_and_Accessories.csv**: 10,063,255 reviews
+
+-   **Clothing_Shoes_and_Jewelry.csv**: 32,292,099 reviews
+
+-   **Digital_Music.csv**: 1,584,082 reviews
+
+-   **Electronics.csv**: 20,994,353 reviews
+
+-   **Gift_Cards.csv**: 147,194 reviews
+
+-   **Grocery_and_Gourmet_Food.csv**: 5,074,160 reviews
+
+-   **Home_and_Kitchen.csv**: 21,928,568 reviews
+
+-   **Industrial_and_Scientific.csv**: 1,758,333 reviews
+
+-   **Kindle_Store.csv**: 5,722,988 reviews
+
+-   **Luxury_Beauty.csv**: 574,628 reviews
+
+-   **Magazine_Subscriptions.csv**: 89,689 reviews
+
+-   **Movies_and_TV.csv**: 8,765,568 reviews
+
+-   **Musical_Instruments.csv**: 1,512,530 reviews
+
+-   **Office_Products.csv**: 5,581,313 reviews
+
+-   **Patio_Lawn_and_Garden.csv**: 5,236,058 reviews
+
+-   **Pet_Supplies.csv**: 6,542,483 reviews
+
+-   **Prime_Pantry.csv**: 471,614 reviews
+
+-   **Software.csv**: 459,436 reviews
+
+-   **Sports_and_Outdoors.csv**: 12,980,837 reviews
+
+-   **Tools_and_Home_Improvement.csv**: 9,015,203 reviews
+
+-   **Toys_and_Games.csv**: 8,201,231 reviews
+
+-   **Video_Games.csv**: 2,565,349 reviews
+
+### Column Descriptors
+
+Each CSV file contains the following columns:
+
+-   **asin**: The Amazon Standard Identification Number (ASIN) for the product.
+
+-   **reviewText**: The text of the review written by the customer.
+
+-   **overall**: The overall rating given by the customer (1 to 5 stars).
+
+-   **category**: The category of the product.
+
+-   **summary**: A brief summary of the review.
+
+## Feature Engineering
 
 ### K-cores
 
@@ -150,6 +233,8 @@ Some categories might have **too many or too few reviews**, so we:
 
 # Data Exploration
 
+## Table Optimization
+
 This code block is designed to **optimize memory usage and improve computational efficiency** when working with a large dataset containing Amazon product reviews. The dataset has over **3.1 million observations**, making memory optimization crucial for smooth data processing and analysis. The code achieves this by converting columns to **appropriate data types**, such as:
 
 -   **`overall` (ratings) → `integer`** to reduce memory compared to storing it as numeric.
@@ -179,7 +264,7 @@ str(data)  # Display structure of the dataset
 
 ```
 
-## Dataset Summary
+## Data Summary
 
 The purpose of this block of code is to **provide a comprehensive summary of the dataset** before performing any further analysis. It helps to **understand the structure, distribution, and composition of the data** by computing key statistics such as numerical summaries, categorical distributions, and data types.
 

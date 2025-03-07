@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>main</title>
+<title>Amazon Sentiment Analysis</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -66,20 +66,54 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="main_files/libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="main_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="main_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="main_files/libs/bootstrap/bootstrap-8a79a254b8e706d3c925cde0a310d4f0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="main_files/libs/bootstrap/bootstrap-a1ff8711b79ae3724c050874b28d9907.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
 
-<body class="fullcontent">
+<body>
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a>
+  <ul class="collapse">
+  <li><a href="#inspiration" id="toc-inspiration" class="nav-link" data-scroll-target="#inspiration"><strong>Inspiration</strong></a></li>
+  </ul></li>
+  <li><a href="#data-cleaning" id="toc-data-cleaning" class="nav-link" data-scroll-target="#data-cleaning">Data Cleaning</a>
+  <ul class="collapse">
+  <li><a href="#file-information" id="toc-file-information" class="nav-link" data-scroll-target="#file-information">File Information</a></li>
+  <li><a href="#column-descriptors" id="toc-column-descriptors" class="nav-link" data-scroll-target="#column-descriptors">Column Descriptors</a></li>
+  <li><a href="#feature-engineering" id="toc-feature-engineering" class="nav-link" data-scroll-target="#feature-engineering">Feature Engineering</a>
+  <ul class="collapse">
+  <li><a href="#k-cores" id="toc-k-cores" class="nav-link" data-scroll-target="#k-cores">K-cores</a></li>
+  <li><a href="#define-length-thresholds-for-reviews" id="toc-define-length-thresholds-for-reviews" class="nav-link" data-scroll-target="#define-length-thresholds-for-reviews">Define Length Thresholds for Reviews</a></li>
+  <li><a href="#categorize-sentiment" id="toc-categorize-sentiment" class="nav-link" data-scroll-target="#categorize-sentiment">Categorize Sentiment</a></li>
+  <li><a href="#categorize-review-length" id="toc-categorize-review-length" class="nav-link" data-scroll-target="#categorize-review-length">Categorize Review Length</a></li>
+  <li><a href="#balance-the-dataset" id="toc-balance-the-dataset" class="nav-link" data-scroll-target="#balance-the-dataset">Balance the Dataset</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#data-exploration" id="toc-data-exploration" class="nav-link" data-scroll-target="#data-exploration">Data Exploration</a>
+  <ul class="collapse">
+  <li><a href="#table-optimization" id="toc-table-optimization" class="nav-link" data-scroll-target="#table-optimization">Table Optimization</a></li>
+  <li><a href="#data-summary" id="toc-data-summary" class="nav-link" data-scroll-target="#data-summary">Data Summary</a>
+  <ul class="collapse">
+  <li><a href="#data-imbalance" id="toc-data-imbalance" class="nav-link" data-scroll-target="#data-imbalance">Data Imbalance</a></li>
+  <li><a href="#review-length-difference" id="toc-review-length-difference" class="nav-link" data-scroll-target="#review-length-difference">Review Length Difference</a></li>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">main</h1>
+<h1 class="title">Amazon Sentiment Analysis</h1>
 </div>
 
 
@@ -96,18 +130,69 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="test" class="level2">
-<h2 class="anchored" data-anchor-id="test">Test</h2>
-<p>bla bla bla</p>
+<section id="overview" class="level1">
+<h1>Overview</h1>
+<section id="inspiration" class="level2">
+<h2 class="anchored" data-anchor-id="inspiration"><strong>Inspiration</strong></h2>
+<p>This dataset can be used to build and evaluate machine learning models, such as sentiment analysis, product recommendation engines, and trend analysis tools. It is particularly useful for natural language processing (NLP) projects and big data analysis.</p>
+</section>
 </section>
 <section id="data-cleaning" class="level1">
 <h1>Data Cleaning</h1>
-<p>This dataset contains a vast collection of Amazon product reviews and metadata across 29 categories, totaling over 75.29 million reviews from the year of 2018. The data was collected by scraping Amazon’s review pages and includes detailed information about each product and its associated reviews.</p>
+<p>This dataset contains a vast collection of Amazon product reviews and metadata across 29 categories, totaling over 75.29 million reviews from the year of 2018. The data was collected by scraping Amazon’s review pages and includes detailed information about each product and its associated reviews. <strong>Source Link:</strong> <a href="https://amazon-reviews-2023.github.io/" class="uri">https://amazon-reviews-2023.github.io/</a></p>
+<section id="file-information" class="level3">
+<h3 class="anchored" data-anchor-id="file-information">File Information</h3>
+<p>The dataset is organized into 29 CSV files, each corresponding to a different product category. Each file contains reviews and associated metadata.</p>
+<ul>
+<li><p><strong>Amazon_Fashion.csv</strong>: 883,636 reviews</p></li>
+<li><p><strong>All_Beauty.csv</strong>: 371,345 reviews</p></li>
+<li><p><strong>Appliances.csv</strong>: 602,777 reviews</p></li>
+<li><p><strong>Arts_Crafts_and_Sewing.csv</strong>: 2,875,917 reviews</p></li>
+<li><p><strong>Automotive.csv</strong>: 7,990,166 reviews</p></li>
+<li><p><strong>Books.csv</strong>: 51,311,621 reviews</p></li>
+<li><p><strong>CDs_and_Vinyl.csv</strong>: 4,543,369 reviews</p></li>
+<li><p><strong>Cell_Phones_and_Accessories.csv</strong>: 10,063,255 reviews</p></li>
+<li><p><strong>Clothing_Shoes_and_Jewelry.csv</strong>: 32,292,099 reviews</p></li>
+<li><p><strong>Digital_Music.csv</strong>: 1,584,082 reviews</p></li>
+<li><p><strong>Electronics.csv</strong>: 20,994,353 reviews</p></li>
+<li><p><strong>Gift_Cards.csv</strong>: 147,194 reviews</p></li>
+<li><p><strong>Grocery_and_Gourmet_Food.csv</strong>: 5,074,160 reviews</p></li>
+<li><p><strong>Home_and_Kitchen.csv</strong>: 21,928,568 reviews</p></li>
+<li><p><strong>Industrial_and_Scientific.csv</strong>: 1,758,333 reviews</p></li>
+<li><p><strong>Kindle_Store.csv</strong>: 5,722,988 reviews</p></li>
+<li><p><strong>Luxury_Beauty.csv</strong>: 574,628 reviews</p></li>
+<li><p><strong>Magazine_Subscriptions.csv</strong>: 89,689 reviews</p></li>
+<li><p><strong>Movies_and_TV.csv</strong>: 8,765,568 reviews</p></li>
+<li><p><strong>Musical_Instruments.csv</strong>: 1,512,530 reviews</p></li>
+<li><p><strong>Office_Products.csv</strong>: 5,581,313 reviews</p></li>
+<li><p><strong>Patio_Lawn_and_Garden.csv</strong>: 5,236,058 reviews</p></li>
+<li><p><strong>Pet_Supplies.csv</strong>: 6,542,483 reviews</p></li>
+<li><p><strong>Prime_Pantry.csv</strong>: 471,614 reviews</p></li>
+<li><p><strong>Software.csv</strong>: 459,436 reviews</p></li>
+<li><p><strong>Sports_and_Outdoors.csv</strong>: 12,980,837 reviews</p></li>
+<li><p><strong>Tools_and_Home_Improvement.csv</strong>: 9,015,203 reviews</p></li>
+<li><p><strong>Toys_and_Games.csv</strong>: 8,201,231 reviews</p></li>
+<li><p><strong>Video_Games.csv</strong>: 2,565,349 reviews</p></li>
+</ul>
+</section>
+<section id="column-descriptors" class="level3">
+<h3 class="anchored" data-anchor-id="column-descriptors">Column Descriptors</h3>
+<p>Each CSV file contains the following columns:</p>
+<ul>
+<li><p><strong>asin</strong>: The Amazon Standard Identification Number (ASIN) for the product.</p></li>
+<li><p><strong>reviewText</strong>: The text of the review written by the customer.</p></li>
+<li><p><strong>overall</strong>: The overall rating given by the customer (1 to 5 stars).</p></li>
+<li><p><strong>category</strong>: The category of the product.</p></li>
+<li><p><strong>summary</strong>: A brief summary of the review.</p></li>
+</ul>
+</section>
+<section id="feature-engineering" class="level2">
+<h2 class="anchored" data-anchor-id="feature-engineering">Feature Engineering</h2>
 <section id="k-cores" class="level3">
 <h3 class="anchored" data-anchor-id="k-cores">K-cores</h3>
-<p>These data have been reduced to extract the&nbsp;<a href="https://en.wikipedia.org/wiki/Degeneracy_(graph_theory)">k-core</a>, such that each of the remaining users and items have k reviews each. This shrinks the size of the dataset to fit the purpose of this project.</p>
+<p>These data have been reduced to extract the&nbsp;<a href="https://en.wikipedia.org/wiki/Degeneracy_(graph_theory)">k-core</a>, such that each of the remaining users and items have k reviews each. This shrinks the size of the dataset to fit the purpose of this project. We then resample data (max 10,000 per category) to further reduce the data size to make it workable.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Warning! Do not run this code block if you already have Amazon_Reviews_Processed.csv file</span></span>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Warning! Do not run this code block if you already have Amazon_Reviews_Processed.csv file in your directory.</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table) <span class="co"># Used for fast data loading and manipulation.</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr) <span class="co"># Provides useful string functions.</span></span>
@@ -161,58 +246,57 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">fread</span>(file)</span>
 <span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ensure column names are correct</span></span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>  <span class="co"># This check ensures data integrity by skipping files that lack required information.</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ensures data integrity by skipping files that lack required information.</span></span>
 <span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span>(<span class="st">"overall"</span> <span class="sc">%in%</span> <span class="fu">names</span>(df)) <span class="sc">||</span> <span class="sc">!</span>(<span class="st">"reviewText"</span> <span class="sc">%in%</span> <span class="fu">names</span>(df))) {</span>
 <span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"Skipping file due to missing columns:"</span>, file, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
 <span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>    <span class="cf">next</span></span>
 <span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Apply sentiment and length categorization</span></span>
-<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Converts numerical ratings into sentiment labels (positive, neutral, negative).</span></span>
-<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>Categorizes reviews into size <span class="fu">categories</span> (small, medium, large).</span>
-<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>  df[, sentiment <span class="sc">:</span><span class="er">=</span> <span class="fu">sapply</span>(overall, categorize_sentiment)]</span>
-<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>  df[, length <span class="sc">:</span><span class="er">=</span> <span class="fu">sapply</span>(reviewText, categorize_length)]</span>
-<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove outlier reviews (long or empty reviews)</span></span>
-<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> df[length <span class="sc">!=</span> <span class="st">"outlier"</span>]</span>
-<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Initialize list for balanced sampling</span></span>
-<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>  samples <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Loop through each sentiment category</span></span>
-<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (sentiment <span class="cf">in</span> <span class="fu">c</span>(<span class="st">"negative"</span>, <span class="st">"neutral"</span>, <span class="st">"positive"</span>)) {</span>
-<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>    sentiment_data <span class="ot">&lt;-</span> df[sentiment <span class="sc">==</span> sentiment]</span>
-<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Loop through each length category</span></span>
-<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (length <span class="cf">in</span> <span class="fu">c</span>(<span class="st">"small"</span>, <span class="st">"medium"</span>, <span class="st">"large"</span>)) {</span>
-<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a>      length_data <span class="ot">&lt;-</span> sentiment_data[length <span class="sc">==</span> length]</span>
-<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Resample data (max 10,000 per category)</span></span>
-<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">nrow</span>(length_data) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>        sampled_data <span class="ot">&lt;-</span> length_data[<span class="fu">sample</span>(.N, <span class="fu">min</span>(.N, <span class="dv">10000</span>))]</span>
-<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a>        samples <span class="ot">&lt;-</span> <span class="fu">append</span>(samples, <span class="fu">list</span>(sampled_data))</span>
-<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Combine samples</span></span>
-<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a>  category_samples <span class="ot">&lt;-</span> <span class="fu">rbindlist</span>(samples, <span class="at">fill =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Print statistics for current category</span></span>
-<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Category:"</span>, <span class="fu">str_remove</span>(<span class="fu">basename</span>(file), <span class="st">"_5.csv"</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Total Samples:"</span>, <span class="fu">nrow</span>(category_samples), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Length Counts:"</span>, <span class="fu">table</span>(category_samples<span class="sc">$</span>length), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Sentiment Counts:"</span>, <span class="fu">table</span>(category_samples<span class="sc">$</span>sentiment), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"--------------------------------------------------</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Append to final dataset</span></span>
-<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a>  final_data <span class="ot">&lt;-</span> <span class="fu">rbind</span>(final_data, category_samples, <span class="at">fill =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a><span class="co"># Save final processed dataset</span></span>
-<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a><span class="fu">fwrite</span>(final_data, <span class="st">"Amazon_Reviews_Processed.csv"</span>)</span>
-<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Data processing complete! Saved to Amazon_Reviews_Processed.csv</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Converts numerical ratings into sentiment labels</span></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>  df[, sentiment <span class="sc">:</span><span class="er">=</span> <span class="fu">sapply</span>(overall, categorize_sentiment)]</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>  df[, length <span class="sc">:</span><span class="er">=</span> <span class="fu">sapply</span>(reviewText, categorize_length)]</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove outlier reviews (long or empty reviews)</span></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> df[length <span class="sc">!=</span> <span class="st">"outlier"</span>]</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Initialize list for balanced sampling</span></span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>  samples <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Loop through each sentiment category</span></span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (sentiment <span class="cf">in</span> <span class="fu">c</span>(<span class="st">"negative"</span>, <span class="st">"neutral"</span>, <span class="st">"positive"</span>)) {</span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>    sentiment_data <span class="ot">&lt;-</span> df[sentiment <span class="sc">==</span> sentiment]</span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Loop through each length category</span></span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (length <span class="cf">in</span> <span class="fu">c</span>(<span class="st">"small"</span>, <span class="st">"medium"</span>, <span class="st">"large"</span>)) {</span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a>      length_data <span class="ot">&lt;-</span> sentiment_data[length <span class="sc">==</span> length]</span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Resample data (max 10,000 per category)</span></span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">nrow</span>(length_data) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a>        sampled_data <span class="ot">&lt;-</span> length_data[<span class="fu">sample</span>(.N, <span class="fu">min</span>(.N, <span class="dv">10000</span>))]</span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>        samples <span class="ot">&lt;-</span> <span class="fu">append</span>(samples, <span class="fu">list</span>(sampled_data))</span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Combine samples</span></span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>  category_samples <span class="ot">&lt;-</span> <span class="fu">rbindlist</span>(samples, <span class="at">fill =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Print statistics for current category</span></span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Category:"</span>, <span class="fu">str_remove</span>(<span class="fu">basename</span>(file), <span class="st">"_5.csv"</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Total Samples:"</span>, <span class="fu">nrow</span>(category_samples), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Length Counts:"</span>, <span class="fu">table</span>(category_samples<span class="sc">$</span>length), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Sentiment Counts:"</span>, <span class="fu">table</span>(category_samples<span class="sc">$</span>sentiment), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"--------------------------------------------------</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Append to final dataset</span></span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a>  final_data <span class="ot">&lt;-</span> <span class="fu">rbind</span>(final_data, category_samples, <span class="at">fill =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a><span class="co"># Save final processed dataset</span></span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a><span class="fu">fwrite</span>(final_data, <span class="st">"Amazon_Reviews_Processed.csv"</span>)</span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Data processing complete! Saved to Amazon_Reviews_Processed.csv</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="define-length-thresholds-for-reviews" class="level3">
@@ -245,8 +329,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 </section>
 </section>
+</section>
 <section id="data-exploration" class="level1">
 <h1>Data Exploration</h1>
+<section id="table-optimization" class="level2">
+<h2 class="anchored" data-anchor-id="table-optimization">Table Optimization</h2>
 <p>This code block is designed to <strong>optimize memory usage and improve computational efficiency</strong> when working with a large dataset containing Amazon product reviews. The dataset has over <strong>3.1 million observations</strong>, making memory optimization crucial for smooth data processing and analysis. The code achieves this by converting columns to <strong>appropriate data types</strong>, such as:</p>
 <ul>
 <li><p><strong><code>overall</code> (ratings) → <code>integer</code></strong> to reduce memory compared to storing it as numeric.</p></li>
@@ -276,18 +363,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(data)  <span class="co"># Display structure of the dataset</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Classes 'data.table' and 'data.frame':  3127185 obs. of  7 variables:
- $ asin      : Factor w/ 938965 levels "0000230022","000100039X",..: 300451 346540 331002 384404 300451 258728 282828 384404 384404 331002 ...
- $ reviewText: chr  "Smells AMAZING. Worth buying" "It was what my 16 year old grandson wanted,because he can not fine it in the stores. Please bring it\nback to walmart." "I really like that this product is paraben-free, but the execution falls flat on its face. The bottle is tiny f"| __truncated__ "I have used HBL Hair Masque before and love the way my hair feels when I rinse out the masque. My hair is defin"| __truncated__ ...
- $ overall   : int  5 5 2 5 5 5 5 5 5 5 ...
+ $ asin      : Factor w/ 938133 levels "0000032034","000100039X",..: 258449 258449 330701 346213 330701 383852 383852 300253 790670 909013 ...
+ $ reviewText: chr  "Great shampoo" "This brand is really nice for brunette hair color. The shampoo gives nice body, shine and condition. I love the"| __truncated__ "This shampoo cleans my hair well, lathers well, and smells good." "I bought this in hopes that it would help me get rid of this dandruff that began over winter that for some reas"| __truncated__ ...
+ $ overall   : int  5 5 5 3 5 5 4 5 4 5 ...
  $ category  : Factor w/ 29 levels "All_Beauty_5",..: 1 1 1 1 1 1 1 1 1 1 ...
- $ summary   : chr  "Worth" "The shower Gel smells great" "I really like that this product is paraben-free" "I have used HBL Hair Masque before and love the way my hair feels when I rinse out ..." ...
- $ sentiment : Factor w/ 3 levels "negative","neutral",..: 3 3 1 3 3 3 3 3 3 3 ...
- $ length    : Factor w/ 3 levels "large","medium",..: 3 3 1 2 2 3 1 3 3 3 ...
+ $ summary   : chr  "Five Stars" "This is a high quality shampoo for brunette hair.." "Great shampoo" "maybe my dandruff is a little bit better. It is a thick shampoo and I do ..." ...
+ $ sentiment : Factor w/ 3 levels "negative","neutral",..: 3 3 3 2 3 3 3 3 3 3 ...
+ $ length    : Factor w/ 3 levels "large","medium",..: 3 1 3 1 3 2 3 3 3 3 ...
  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </code></pre>
 </div>
 </div>
-<section id="dataset-summary" class="level2">
-<h2 class="anchored" data-anchor-id="dataset-summary">Dataset Summary</h2>
+</section>
+<section id="data-summary" class="level2">
+<h2 class="anchored" data-anchor-id="data-summary">Data Summary</h2>
 <p>The purpose of this block of code is to <strong>provide a comprehensive summary of the dataset</strong> before performing any further analysis. It helps to <strong>understand the structure, distribution, and composition of the data</strong> by computing key statistics such as numerical summaries, categorical distributions, and data types.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load dataset</span></span>
@@ -301,10 +389,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     asin            reviewText           overall        category        
- Length:3127185     Length:3127185     Min.   :1.000   Length:3127185    
+ Length:3127185     Length:3127185     Min.   :0.000   Length:3127185    
  Class :character   Class :character   1st Qu.:4.000   Class :character  
  Mode  :character   Mode  :character   Median :5.000   Mode  :character  
-                                       Mean   :4.427                     
+                                       Mean   :4.426                     
                                        3rd Qu.:5.000                     
                                        Max.   :5.000                     
    summary           sentiment            length         
@@ -323,13 +411,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Classes 'data.table' and 'data.frame':  3127185 obs. of  7 variables:
- $ asin      : chr  "B000FI4S1E" "B0012Y0ZG2" "B000URXP6E" "B001OHV1H4" ...
- $ reviewText: chr  "Smells AMAZING. Worth buying" "It was what my 16 year old grandson wanted,because he can not fine it in the stores. Please bring it\nback to walmart." "I really like that this product is paraben-free, but the execution falls flat on its face. The bottle is tiny f"| __truncated__ "I have used HBL Hair Masque before and love the way my hair feels when I rinse out the masque. My hair is defin"| __truncated__ ...
- $ overall   : num  5 5 2 5 5 5 5 5 5 5 ...
+ $ asin      : chr  "B00006L9LC" "B00006L9LC" "B000URXP6E" "B0012Y0ZG2" ...
+ $ reviewText: chr  "Great shampoo" "This brand is really nice for brunette hair color. The shampoo gives nice body, shine and condition. I love the"| __truncated__ "This shampoo cleans my hair well, lathers well, and smells good." "I bought this in hopes that it would help me get rid of this dandruff that began over winter that for some reas"| __truncated__ ...
+ $ overall   : num  5 5 5 3 5 5 4 5 4 5 ...
  $ category  : chr  "All_Beauty_5" "All_Beauty_5" "All_Beauty_5" "All_Beauty_5" ...
- $ summary   : chr  "Worth" "The shower Gel smells great" "I really like that this product is paraben-free" "I have used HBL Hair Masque before and love the way my hair feels when I rinse out ..." ...
- $ sentiment : chr  "positive" "positive" "negative" "positive" ...
- $ length    : chr  "small" "small" "large" "medium" ...
+ $ summary   : chr  "Five Stars" "This is a high quality shampoo for brunette hair.." "Great shampoo" "maybe my dandruff is a little bit better. It is a thick shampoo and I do ..." ...
+ $ sentiment : chr  "positive" "positive" "positive" "neutral" ...
+ $ length    : chr  "small" "large" "small" "large" ...
  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Display frequency counts for categorical variables</span></span>
@@ -379,7 +467,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stdout">
 <pre><code>
 negative  neutral positive 
-  127230   125878  2874077 </code></pre>
+  103737   106711  2916737 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">"📌 Length Category Distribution:"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -389,7 +477,7 @@ negative  neutral positive
 <div class="cell-output cell-output-stdout">
 <pre><code>
   large  medium   small 
- 594643  784274 1748268 </code></pre>
+ 594470  785052 1747663 </code></pre>
 </div>
 </div>
 <section id="data-imbalance" class="level3">
