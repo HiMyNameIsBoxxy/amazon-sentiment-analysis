@@ -17,7 +17,7 @@ This dataset contains a vast collection of Amazon product reviews and metadata a
 These data have been reduced to extract the [k-core](https://en.wikipedia.org/wiki/Degeneracy_(graph_theory)), such that each of the remaining users and items have k reviews each. This shrinks the size of the dataset to fit the purpose of this project. We then resample data (max 10,000 per category) to further reduce the data size to make it workable.
 
 ```{r, eval=FALSE}
-# Warning! Do not run this code block if you already have Amazon_Reviews_Processed.csv file
+# Warning! Do not run this code block if you already have Amazon_Reviews_Processed.csv file in your directory.
 
 library(data.table) # Used for fast data loading and manipulation.
 library(stringr) # Provides useful string functions.
