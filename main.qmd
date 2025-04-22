@@ -7,9 +7,9 @@ format:
     sidebar: true
 ---
 
-# Overviewloiuawhd
+# Overview
 
-## **Inspirationk**
+## **Inspiration**
 
 This dataset can be used to build and evaluate machine learning models, such as sentiment analysis, product recommendation engines, and trend analysis tools. It is particularly useful for natural language processing (NLP) projects and big data analysis.
 
@@ -305,4 +305,157 @@ The **category distribution** shows that some categories, like **Books (630,000 
 
 -   It helps in making **business and research decisions**, such as identifying which product types receive more customer engagement.
 
-### 
+# Building A Classification Model
+
+We would like to see whether a review is likely to result in a high (4-5 stars) or low (1-2 stars) rating using logistic regression based on textual features.
+
+### Setup & Data Ingestion
+
+```{r}
+# text mining
+library(tidytext)
+library(textdata)
+library(dplyr)
+library(ggplot2)
+
+dat<-read.csv('Amazon_Reviews_Processed.csv')
+
+dat<-dat%>%mutate(ID=1:nrow(dat))
+```
+
+### Tokenization & Compute TF-IDF
+
+```{r}
+temp<-dat%>%
+  # splits each reviewText into lowercase tokens
+  unnest_tokens(output = word, input = reviewText)%>%
+  
+  # keeps only tokens that Bing’s lexicon classifies as positive or negative
+  inner_join(get_sentiments('bing'))%>%
+  
+  # collapses duplicate tokens inside each review and stores how often they appear (n
+  count(ID, word)%>%
+  
+  bind_tf_idf(word, ID, n)
+
+```
+
+tf – term frequency in a review
+
+idf – inverse‑document frequency across all reviews
+
+tf_idf – their product, which emphasises words that are common within a review but rare across reviews.
+
+### Bring in the star rating (overall sentiment label)
+
+```{r}
+temp<-temp%>%left_join(dat%>%select(ID,overall))
+```
+
+After the join each token row now knows the review’s star rating (overall). This lets you test whether certain words predict higher or lower ratings later.
+
+### How many unique words explain most of the corpus?
+
+```{r}
+# words with high frequency
+temp%>%group_by(word)%>%
+  summarise(counts=sum(n))%>%
+  arrange(-counts)%>%
+  mutate(Proportion=cumsum(counts)/nrow(temp),
+         freq_rank=1:4547)%>%
+  ggplot(aes(freq_rank,Proportion))+geom_line()+
+  geom_hline(yintercept = 0.8,linetype=2,colour='red')+
+  geom_vline(xintercept =60,linetype=2,colour='red')
+```
+
+### Display the 60 most frequent sentiment‑bearing word
+
+```{r}
+# 60 words with highest frequency would capture more than 80% words counts
+temp%>%group_by(word)%>%
+  summarise(counts=sum(n))%>%
+  mutate(word=reorder(word,counts))%>%arrange(-counts)%>%head(60)%>%
+  ggplot(aes(y=word,x=counts))+geom_bar(stat = 'identity')
+
+```
+
+### Feature Selection (Dimension Reduction)
+
+```{r}
+# features
+words<-temp%>%
+  group_by(word)%>%
+  summarise(counts=sum(n))%>%
+  mutate(word=reorder(word,counts))%>%
+  arrange(-counts)%>%
+  head(60)
+
+words<-as.character(words$word)
+```
+
+We limit the feature space so the model doesn’t explode in dimensionality (60 columns instead of thousands)
+
+### Converting the tidy tokens into a document‑term matrix
+
+```{r}
+temp2<-temp%>%filter(word%in%words)
+
+# rows　= reviews, cols　= words, value　= idf
+dat_feat<-temp2%>%
+  cast_dtm(ID, word, idf)%>%
+  as.matrix()
+
+# bring back the star rating
+dat_feat<-dat%>%
+  select(ID,overall)%>%
+  left_join(data.frame(ID=as.numeric(rownames(dat_feat)),dat_feat))
+
+# words that don’t appear in a review → 0
+dat_feat[is.na(dat_feat)]<-0
+
+```
+
+### Fit a logistic regression and visualise word effects
+
+```{r}
+# logistic regression model
+
+# Binary target: 1 if rating < 4 stars (negativeish), 0 otherwise.
+mod<-glm(I(overall<4)~.-ID-overall,data=dat_feat,family=binomial())
+
+summary(mod)
+
+# drop the intercept
+coef<-coef(mod)[-1]
+
+data.frame(coef,words=names(coef))%>%
+  ggplot(aes(x=coef,y=reorder(words,abs(coef))))+
+  geom_bar(stat='identity')+
+  labs(x='log(OR) of low rating',y='keywords')
+```
+
+## Model Evaluation
+
+```{r}
+# model evaluation
+# confusion matrix
+pred<-ifelse(predict(mod)>0,'low','high')
+
+real<-ifelse(dat_feat$overall<4,'low','high')
+
+caret::confusionMatrix(as.factor(pred),as.factor(real))
+
+library(pROC)
+roc1<-roc(real~predict(mod))
+plot(roc1,print.auc=TRUE)
+auc(roc1)
+```
+
+0.83 ⇒ **83 % of the time** it orders the pair correctly. \
+Values:\
+• \> 0.90 = excellent\
+• 0.80–0.90 = good\
+• 0.70–0.80 = fair\
+• 0.50–0.70 = weak
+
+The result is solid for a first pass, but there’s still head‑room before you hit “excellent.”
