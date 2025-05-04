@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Amazon Sentiment Analysis</title>
+<title>Product Sentiment Analysis &amp; Recommender System</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -103,8 +103,59 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#data-imbalance" id="toc-data-imbalance" class="nav-link" data-scroll-target="#data-imbalance">Data Imbalance</a></li>
   <li><a href="#review-length-difference" id="toc-review-length-difference" class="nav-link" data-scroll-target="#review-length-difference">Review Length Difference</a></li>
-  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a></li>
+  <li><a href="#histograms-for-review-lengths-and-overall-scores" id="toc-histograms-for-review-lengths-and-overall-scores" class="nav-link" data-scroll-target="#histograms-for-review-lengths-and-overall-scores"><strong>Histograms for review lengths and overall scores</strong></a></li>
   </ul></li>
+  <li><a href="#additional-charts" id="toc-additional-charts" class="nav-link" data-scroll-target="#additional-charts">Additional Charts</a>
+  <ul class="collapse">
+  <li><a href="#box-plots-for-review-lengths-by-sentiment" id="toc-box-plots-for-review-lengths-by-sentiment" class="nav-link" data-scroll-target="#box-plots-for-review-lengths-by-sentiment"><strong>Box plots for review lengths by sentiment</strong></a></li>
+  <li><a href="#bar-plots-for-sentiment-distribution-across-categories" id="toc-bar-plots-for-sentiment-distribution-across-categories" class="nav-link" data-scroll-target="#bar-plots-for-sentiment-distribution-across-categories"><strong>Bar plots for sentiment distribution across categories</strong></a></li>
+  <li><a href="#word-cloud" id="toc-word-cloud" class="nav-link" data-scroll-target="#word-cloud"><strong>Word Cloud</strong></a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">Data Preparation</a>
+  <ul class="collapse">
+  <li><a href="#text-processing" id="toc-text-processing" class="nav-link" data-scroll-target="#text-processing">Text Processing</a></li>
+  <li><a href="#encoding-tokenizing" id="toc-encoding-tokenizing" class="nav-link" data-scroll-target="#encoding-tokenizing">Encoding &amp; Tokenizing</a>
+  <ul class="collapse">
+  <li><a href="#distribution-check" id="toc-distribution-check" class="nav-link" data-scroll-target="#distribution-check">Distribution Check</a></li>
+  <li><a href="#bar-plotting-of-distributions" id="toc-bar-plotting-of-distributions" class="nav-link" data-scroll-target="#bar-plotting-of-distributions">Bar Plotting of Distributions</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#building-classification-models" id="toc-building-classification-models" class="nav-link" data-scroll-target="#building-classification-models">Building Classification Models</a>
+  <ul class="collapse">
+  <li><a href="#syuzhet-rule-based" id="toc-syuzhet-rule-based" class="nav-link" data-scroll-target="#syuzhet-rule-based">Syuzhet (Rule Based)</a>
+  <ul class="collapse">
+  <li><a href="#applying-sentiment-scoring" id="toc-applying-sentiment-scoring" class="nav-link" data-scroll-target="#applying-sentiment-scoring">Applying Sentiment Scoring</a></li>
+  <li><a href="#evaluation" id="toc-evaluation" class="nav-link" data-scroll-target="#evaluation">Evaluation</a></li>
+  </ul></li>
+  <li><a href="#logistic-regression-ml" id="toc-logistic-regression-ml" class="nav-link" data-scroll-target="#logistic-regression-ml">Logistic Regression (ML)</a>
+  <ul class="collapse">
+  <li><a href="#word-frequency-analysis" id="toc-word-frequency-analysis" class="nav-link" data-scroll-target="#word-frequency-analysis">Word Frequency Analysis</a></li>
+  <li><a href="#bar-plot-of-top-60-frequent-words" id="toc-bar-plot-of-top-60-frequent-words" class="nav-link" data-scroll-target="#bar-plot-of-top-60-frequent-words">Bar Plot of Top 60 Frequent Words</a></li>
+  <li><a href="#fitting-logistic-regression-model" id="toc-fitting-logistic-regression-model" class="nav-link" data-scroll-target="#fitting-logistic-regression-model">Fitting Logistic Regression Model</a></li>
+  <li><a href="#evaluation-1" id="toc-evaluation-1" class="nav-link" data-scroll-target="#evaluation-1">Evaluation</a></li>
+  </ul></li>
+  <li><a href="#model-comaprison" id="toc-model-comaprison" class="nav-link" data-scroll-target="#model-comaprison">Model Comaprison</a></li>
+  </ul></li>
+  <li><a href="#building-recommender" id="toc-building-recommender" class="nav-link" data-scroll-target="#building-recommender">Building Recommender</a>
+  <ul class="collapse">
+  <li><a href="#baseline-model" id="toc-baseline-model" class="nav-link" data-scroll-target="#baseline-model">Baseline Model</a>
+  <ul class="collapse">
+  <li><a href="#feature-engineering-1" id="toc-feature-engineering-1" class="nav-link" data-scroll-target="#feature-engineering-1">Feature Engineering</a></li>
+  <li><a href="#feature-matrix-normalization" id="toc-feature-matrix-normalization" class="nav-link" data-scroll-target="#feature-matrix-normalization">Feature Matrix &amp; Normalization</a></li>
+  <li><a href="#cosine-similiarty" id="toc-cosine-similiarty" class="nav-link" data-scroll-target="#cosine-similiarty">Cosine Similiarty</a></li>
+  <li><a href="#traintest-split" id="toc-traintest-split" class="nav-link" data-scroll-target="#traintest-split">Train/Test Split</a></li>
+  <li><a href="#generate-recommendation" id="toc-generate-recommendation" class="nav-link" data-scroll-target="#generate-recommendation">Generate Recommendation</a></li>
+  <li><a href="#result-plot" id="toc-result-plot" class="nav-link" data-scroll-target="#result-plot">Result Plot</a></li>
+  </ul></li>
+  <li><a href="#lr-derived-model" id="toc-lr-derived-model" class="nav-link" data-scroll-target="#lr-derived-model">LR Derived Model</a>
+  <ul class="collapse">
+  <li><a href="#predict-lrderived-probabilities" id="toc-predict-lrderived-probabilities" class="nav-link" data-scroll-target="#predict-lrderived-probabilities">Predict LR‑Derived Probabilities</a></li>
+  <li><a href="#traintest-split-1" id="toc-traintest-split-1" class="nav-link" data-scroll-target="#traintest-split-1">Train/Test Split</a></li>
+  <li><a href="#generate-recommendation-1" id="toc-generate-recommendation-1" class="nav-link" data-scroll-target="#generate-recommendation-1">Generate Recommendation</a></li>
+  <li><a href="#result-plot-1" id="toc-result-plot-1" class="nav-link" data-scroll-target="#result-plot-1">Result Plot</a></li>
+  </ul></li>
+  <li><a href="#evaluation-2" id="toc-evaluation-2" class="nav-link" data-scroll-target="#evaluation-2">Evaluation</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -113,7 +164,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Amazon Sentiment Analysis</h1>
+<h1 class="title">Product Sentiment Analysis &amp; Recommender System</h1>
 </div>
 
 
@@ -493,9 +544,1237 @@ negative  neutral positive
 <li><p>It helps in making <strong>business and research decisions</strong>, such as identifying which product types receive more customer engagement.</p></li>
 </ul>
 </section>
-<section id="section" class="level3">
-<h3 class="anchored" data-anchor-id="section"></h3>
+<section id="histograms-for-review-lengths-and-overall-scores" class="level3">
+<h3 class="anchored" data-anchor-id="histograms-for-review-lengths-and-overall-scores"><strong>Histograms for review lengths and overall scores</strong></h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'ggplot2' was built under R version 4.4.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'dplyr' was built under R version 4.4.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:data.table':
+
+    between, first, last</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="st">"Amazon_Reviews_Processed.csv"</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">review_length =</span> <span class="fu">nchar</span>(reviewText))</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Plot histograms side by side ---</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'gridExtra' was built under R version 4.4.2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'gridExtra'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:dplyr':
+
+    combine</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> review_length)) <span class="sc">+</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">50</span>, <span class="at">fill =</span> <span class="st">"#69b3a2"</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Distribution of Review Lengths"</span>) <span class="sc">+</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Review Length"</span>) <span class="sc">+</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> overall)) <span class="sc">+</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">fill =</span> <span class="st">"#ff9999"</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Distribution of Overall Scores"</span>) <span class="sc">+</span></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Overall Rating"</span>) <span class="sc">+</span></span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Display plots ---</span></span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(p1, p2, <span class="at">ncol =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="main_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
+</section>
+<section id="additional-charts" class="level2">
+<h2 class="anchored" data-anchor-id="additional-charts">Additional Charts</h2>
+<section id="box-plots-for-review-lengths-by-sentiment" class="level3">
+<h3 class="anchored" data-anchor-id="box-plots-for-review-lengths-by-sentiment"><strong>Box plots for review lengths by sentiment</strong></h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="st">"Amazon_Reviews_Processed.csv"</span>)</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Add review length column ---</span></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">review_length =</span> <span class="fu">nchar</span>(reviewText))</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Plot box plot ---</span></span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> sentiment, <span class="at">y =</span> review_length)) <span class="sc">+</span></span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">fill =</span> <span class="st">"#99c2ff"</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Box Plot of Review Lengths by Sentiment"</span>) <span class="sc">+</span></span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Sentiment"</span>) <span class="sc">+</span></span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Review Length"</span>) <span class="sc">+</span></span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="main_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="bar-plots-for-sentiment-distribution-across-categories" class="level3">
+<h3 class="anchored" data-anchor-id="bar-plots-for-sentiment-distribution-across-categories"><strong>Bar plots for sentiment distribution across categories</strong></h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="st">"Amazon_Reviews_Processed.csv"</span>)</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Count sentiment per category ---</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>sentiment_category <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(category, sentiment) <span class="sc">%&gt;%</span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">count =</span> <span class="fu">n</span>(), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Plot stacked bar chart ---</span></span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sentiment_category, <span class="fu">aes</span>(<span class="at">x =</span> category, <span class="at">y =</span> count, <span class="at">fill =</span> sentiment)) <span class="sc">+</span></span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Sentiment Distribution Across Categories"</span>) <span class="sc">+</span></span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Category"</span>) <span class="sc">+</span></span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Number of Reviews"</span>) <span class="sc">+</span></span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set2"</span>, <span class="at">name =</span> <span class="st">"Sentiment"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="main_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="word-cloud" class="level3">
+<h3 class="anchored" data-anchor-id="word-cloud"><strong>Word Cloud</strong></h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Load Required Libraries ---</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'tm' was built under R version 4.4.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: NLP</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'NLP' was built under R version 4.4.2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'NLP'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:ggplot2':
+
+    annotate</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wordcloud)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'wordcloud' was built under R version 4.4.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: RColorBrewer</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RColorBrewer)</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Load Your Data ---</span></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="st">"Amazon_Reviews_Processed.csv"</span>)</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Fill NA summaries ---</span></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>summary[<span class="fu">is.na</span>(df<span class="sc">$</span>summary)] <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Sample 10,000 per sentiment (or fewer if not available) ---</span></span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>df_sampled <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sentiment) <span class="sc">%&gt;%</span></span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="at">size =</span> <span class="fu">min</span>(<span class="dv">10000</span>, <span class="fu">n</span>()), <span class="at">replace =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Function to Clean and Extract Word Frequencies ---</span></span>
+<span id="cb50-17"><a href="#cb50-17" aria-hidden="true" tabindex="-1"></a>get_term_freq <span class="ot">&lt;-</span> <span class="cf">function</span>(text_vector) {</span>
+<span id="cb50-18"><a href="#cb50-18" aria-hidden="true" tabindex="-1"></a>  corpus <span class="ot">&lt;-</span> <span class="fu">Corpus</span>(<span class="fu">VectorSource</span>(text_vector))</span>
+<span id="cb50-19"><a href="#cb50-19" aria-hidden="true" tabindex="-1"></a>  corpus <span class="ot">&lt;-</span> corpus <span class="sc">%&gt;%</span></span>
+<span id="cb50-20"><a href="#cb50-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_map</span>(<span class="fu">content_transformer</span>(tolower)) <span class="sc">%&gt;%</span></span>
+<span id="cb50-21"><a href="#cb50-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_map</span>(removePunctuation) <span class="sc">%&gt;%</span></span>
+<span id="cb50-22"><a href="#cb50-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_map</span>(removeNumbers) <span class="sc">%&gt;%</span></span>
+<span id="cb50-23"><a href="#cb50-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_map</span>(removeWords, <span class="fu">stopwords</span>(<span class="st">"en"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb50-24"><a href="#cb50-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_map</span>(stripWhitespace)</span>
+<span id="cb50-25"><a href="#cb50-25" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb50-26"><a href="#cb50-26" aria-hidden="true" tabindex="-1"></a>  dtm <span class="ot">&lt;-</span> <span class="fu">TermDocumentMatrix</span>(corpus, <span class="at">control =</span> <span class="fu">list</span>(<span class="at">wordLengths =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="cn">Inf</span>)))</span>
+<span id="cb50-27"><a href="#cb50-27" aria-hidden="true" tabindex="-1"></a>  m <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(dtm)</span>
+<span id="cb50-28"><a href="#cb50-28" aria-hidden="true" tabindex="-1"></a>  word_freqs <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">rowSums</span>(m), <span class="at">decreasing =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb50-29"><a href="#cb50-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(word_freqs)</span>
+<span id="cb50-30"><a href="#cb50-30" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb50-31"><a href="#cb50-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-32"><a href="#cb50-32" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Generate Word Frequencies for Each Sentiment ---</span></span>
+<span id="cb50-33"><a href="#cb50-33" aria-hidden="true" tabindex="-1"></a>pos_words <span class="ot">&lt;-</span> <span class="fu">get_term_freq</span>(df_sampled <span class="sc">%&gt;%</span> <span class="fu">filter</span>(sentiment <span class="sc">==</span> <span class="st">"positive"</span>) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(summary))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in tm_map.SimpleCorpus(., content_transformer(tolower)): transformation
+drops documents</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in tm_map.SimpleCorpus(., removePunctuation): transformation drops
+documents</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in tm_map.SimpleCorpus(., removeNumbers): transformation drops
+documents</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in tm_map.SimpleCorpus(., removeWords, stopwords("en")): transformation
+drops documents</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in tm_map.SimpleCorpus(., stripWhitespace): transformation drops
+documents</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>neu_words <span class="ot">&lt;-</span> <span class="fu">get_term_freq</span>(df_sampled <span class="sc">%&gt;%</span> <span class="fu">filter</span>(sentiment <span class="sc">==</span> <span class="st">"neutral"</span>) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(summary))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in tm_map.SimpleCorpus(., content_transformer(tolower)): transformation
+drops documents</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in tm_map.SimpleCorpus(., removePunctuation): transformation drops
+documents</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in tm_map.SimpleCorpus(., removeNumbers): transformation drops
+documents</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in tm_map.SimpleCorpus(., removeWords, stopwords("en")): transformation
+drops documents</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in tm_map.SimpleCorpus(., stripWhitespace): transformation drops
+documents</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>neg_words <span class="ot">&lt;-</span> <span class="fu">get_term_freq</span>(df_sampled <span class="sc">%&gt;%</span> <span class="fu">filter</span>(sentiment <span class="sc">==</span> <span class="st">"negative"</span>) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(summary))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in tm_map.SimpleCorpus(., content_transformer(tolower)): transformation
+drops documents</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in tm_map.SimpleCorpus(., removePunctuation): transformation drops
+documents</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in tm_map.SimpleCorpus(., removeNumbers): transformation drops
+documents</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in tm_map.SimpleCorpus(., removeWords, stopwords("en")): transformation
+drops documents</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in tm_map.SimpleCorpus(., stripWhitespace): transformation drops
+documents</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Plot Word Clouds Side by Side ---</span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>))</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a><span class="fu">wordcloud</span>(<span class="fu">names</span>(pos_words), pos_words, <span class="at">max.words =</span> <span class="dv">100</span>,</span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">scale =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="fl">0.5</span>), <span class="at">colors =</span> <span class="fu">brewer.pal</span>(<span class="dv">8</span>, <span class="st">"Dark2"</span>))</span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="st">"Positive Reviews Word Cloud"</span>)</span>
+<span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a><span class="fu">wordcloud</span>(<span class="fu">names</span>(neu_words), neu_words, <span class="at">max.words =</span> <span class="dv">100</span>,</span>
+<span id="cb68-9"><a href="#cb68-9" aria-hidden="true" tabindex="-1"></a>          <span class="at">scale =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="fl">0.5</span>), <span class="at">colors =</span> <span class="fu">brewer.pal</span>(<span class="dv">8</span>, <span class="st">"Dark2"</span>))</span>
+<span id="cb68-10"><a href="#cb68-10" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="st">"Neutral Reviews Word Cloud"</span>)</span>
+<span id="cb68-11"><a href="#cb68-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-12"><a href="#cb68-12" aria-hidden="true" tabindex="-1"></a><span class="fu">wordcloud</span>(<span class="fu">names</span>(neg_words), neg_words, <span class="at">max.words =</span> <span class="dv">100</span>,</span>
+<span id="cb68-13"><a href="#cb68-13" aria-hidden="true" tabindex="-1"></a>          <span class="at">scale =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="fl">0.5</span>), <span class="at">colors =</span> <span class="fu">brewer.pal</span>(<span class="dv">8</span>, <span class="st">"Dark2"</span>))</span>
+<span id="cb68-14"><a href="#cb68-14" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="st">"Negative Reviews Word Cloud"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="main_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="data-preparation" class="level1">
+<h1>Data Preparation</h1>
+<section id="text-processing" class="level2">
+<h2 class="anchored" data-anchor-id="text-processing">Text Processing</h2>
+<ul>
+<li><p>Lowercases text</p></li>
+<li><p>Tokenizes it</p></li>
+<li><p>Removes stopwords but preserves negations (e.g., “not”, “don’t”)</p></li>
+<li><p>Removes punctuation</p></li>
+<li><p>Collapses extra whitespace</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Load required libraries ---</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tm)</span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'stringr' was built under R version 4.4.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tokenizers)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'tokenizers' was built under R version 4.4.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Define stop words and negation stop words ---</span></span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>standard_stopwords <span class="ot">&lt;-</span> <span class="fu">stopwords</span>(<span class="st">"en"</span>)</span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>neg_stop_words <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"no"</span>, <span class="st">"nor"</span>, <span class="st">"not"</span>, <span class="st">"don't"</span>, <span class="st">"doesn't"</span>, <span class="st">"hadn't"</span>, <span class="st">"hasn't"</span>, <span class="st">"haven't"</span>,</span>
+<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"isn't"</span>, <span class="st">"mightn't"</span>, <span class="st">"mustn't"</span>, <span class="st">"needn't"</span>, <span class="st">"shan't"</span>, <span class="st">"shouldn't"</span>,</span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"wasn't"</span>, <span class="st">"weren't"</span>, <span class="st">"won't"</span>, <span class="st">"wouldn't"</span></span>
+<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Custom stopword list: remove negations from stopwords ---</span></span>
+<span id="cb73-11"><a href="#cb73-11" aria-hidden="true" tabindex="-1"></a>custom_stopwords <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(standard_stopwords, neg_stop_words)</span>
+<span id="cb73-12"><a href="#cb73-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-13"><a href="#cb73-13" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Preprocess function ---</span></span>
+<span id="cb73-14"><a href="#cb73-14" aria-hidden="true" tabindex="-1"></a>preprocess_text <span class="ot">&lt;-</span> <span class="cf">function</span>(text, <span class="at">stop_words =</span> custom_stopwords, <span class="at">neg_words =</span> neg_stop_words) {</span>
+<span id="cb73-15"><a href="#cb73-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert to lowercase</span></span>
+<span id="cb73-16"><a href="#cb73-16" aria-hidden="true" tabindex="-1"></a>  text <span class="ot">&lt;-</span> <span class="fu">tolower</span>(text)</span>
+<span id="cb73-17"><a href="#cb73-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb73-18"><a href="#cb73-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Tokenize</span></span>
+<span id="cb73-19"><a href="#cb73-19" aria-hidden="true" tabindex="-1"></a>  tokens <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">tokenize_words</span>(text))</span>
+<span id="cb73-20"><a href="#cb73-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb73-21"><a href="#cb73-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove stop words except negations</span></span>
+<span id="cb73-22"><a href="#cb73-22" aria-hidden="true" tabindex="-1"></a>  filtered_tokens <span class="ot">&lt;-</span> tokens[<span class="sc">!</span>(tokens <span class="sc">%in%</span> stop_words) <span class="sc">|</span> tokens <span class="sc">%in%</span> neg_words]</span>
+<span id="cb73-23"><a href="#cb73-23" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb73-24"><a href="#cb73-24" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove punctuation</span></span>
+<span id="cb73-25"><a href="#cb73-25" aria-hidden="true" tabindex="-1"></a>  filtered_tokens <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"[[:punct:]]"</span>, <span class="st">""</span>, filtered_tokens)</span>
+<span id="cb73-26"><a href="#cb73-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb73-27"><a href="#cb73-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove empty strings and extra whitespace</span></span>
+<span id="cb73-28"><a href="#cb73-28" aria-hidden="true" tabindex="-1"></a>  filtered_tokens <span class="ot">&lt;-</span> filtered_tokens[filtered_tokens <span class="sc">!=</span> <span class="st">""</span>]</span>
+<span id="cb73-29"><a href="#cb73-29" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb73-30"><a href="#cb73-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Rejoin tokens</span></span>
+<span id="cb73-31"><a href="#cb73-31" aria-hidden="true" tabindex="-1"></a>  cleaned_text <span class="ot">&lt;-</span> <span class="fu">str_trim</span>(<span class="fu">paste</span>(filtered_tokens, <span class="at">collapse =</span> <span class="st">" "</span>))</span>
+<span id="cb73-32"><a href="#cb73-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(cleaned_text)</span>
+<span id="cb73-33"><a href="#cb73-33" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb73-34"><a href="#cb73-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-35"><a href="#cb73-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the preprocessing function to the text</span></span>
+<span id="cb73-36"><a href="#cb73-36" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>cleaned_text <span class="ot">&lt;-</span> <span class="fu">sapply</span>(df<span class="sc">$</span>reviewText, preprocess_text)</span>
+<span id="cb73-37"><a href="#cb73-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-38"><a href="#cb73-38" aria-hidden="true" tabindex="-1"></a><span class="co"># View original vs cleaned text side by side (first 2 rows)</span></span>
+<span id="cb73-39"><a href="#cb73-39" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df[, <span class="fu">c</span>(<span class="st">"reviewText"</span>, <span class="st">"cleaned_text"</span>)], <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                                                                                                                                                                                                                        reviewText
+                                                                                                                                                                                                                                                                            &lt;char&gt;
+1:                                                                                                                                                                                                                                                                   Great shampoo
+2: This brand is really nice for brunette hair color. The shampoo gives nice body, shine and condition. I love the scent, it is not chemically based, so I choose these types. The bonus 2 pack was a very good deal too. It helps my natural hair dye keep its color longer too..
+                                                                                                                                                                                 cleaned_text
+                                                                                                                                                                                       &lt;char&gt;
+1:                                                                                                                                                                              great shampoo
+2: brand really nice brunette hair color shampoo gives nice body shine condition love scent not chemically based choose types bonus 2 pack good deal helps natural hair dye keep color longer</code></pre>
+</div>
+</div>
+</section>
+<section id="encoding-tokenizing" class="level2">
+<h2 class="anchored" data-anchor-id="encoding-tokenizing">Encoding &amp; Tokenizing</h2>
+<p><strong>Stratified sampling by sentiment and review length</strong> to ensure your train/validation/test splits maintain balanced proportions</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pbapply) <span class="co">#For progress bar</span></span>
+<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-7"><a href="#cb75-7" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Clean dataset ---</span></span>
+<span id="cb75-8"><a href="#cb75-8" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="st">"Amazon_Reviews_Processed.csv"</span>)</span>
+<span id="cb75-9"><a href="#cb75-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-10"><a href="#cb75-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply custom function "preprocess_text</span></span>
+<span id="cb75-11"><a href="#cb75-11" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>cleaned_text <span class="ot">&lt;-</span> pbapply<span class="sc">::</span><span class="fu">pbsapply</span>(df<span class="sc">$</span>reviewText, preprocess_text)</span>
+<span id="cb75-12"><a href="#cb75-12" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>cleaned_length <span class="ot">&lt;-</span> <span class="fu">nchar</span>(df<span class="sc">$</span>cleaned_text)</span>
+<span id="cb75-13"><a href="#cb75-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-14"><a href="#cb75-14" aria-hidden="true" tabindex="-1"></a><span class="fu">fwrite</span>(df, <span class="st">"Amazon_Reviews_Cleaned.csv"</span>)</span>
+<span id="cb75-15"><a href="#cb75-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-16"><a href="#cb75-16" aria-hidden="true" tabindex="-1"></a><span class="co"># This chunk takes about 10 minutes to run. We will skip this in rendering.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: lattice</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pbapply)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'pbapply' was built under R version 4.4.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Load cleaned dataset ---</span></span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="st">"Amazon_Reviews_Cleaned.csv"</span>)</span>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Bin review length ---</span></span>
+<span id="cb80-5"><a href="#cb80-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb80-6"><a href="#cb80-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb80-7"><a href="#cb80-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">length_bin =</span> <span class="fu">cut</span>(cleaned_length, </span>
+<span id="cb80-8"><a href="#cb80-8" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">128</span>, <span class="dv">256</span>, <span class="cn">Inf</span>), </span>
+<span id="cb80-9"><a href="#cb80-9" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"short"</span>, <span class="st">"medium"</span>, <span class="st">"long"</span>)),</span>
+<span id="cb80-10"><a href="#cb80-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">stratify_col =</span> <span class="fu">paste</span>(sentiment, length_bin, <span class="at">sep =</span> <span class="st">"_"</span>)</span>
+<span id="cb80-11"><a href="#cb80-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb80-12"><a href="#cb80-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(stratify_col))</span>
+<span id="cb80-13"><a href="#cb80-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb80-14"><a href="#cb80-14" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Stratified splitting using caret::createDataPartition ---</span></span>
+<span id="cb80-15"><a href="#cb80-15" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb80-16"><a href="#cb80-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb80-17"><a href="#cb80-17" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Split off training set</span></span>
+<span id="cb80-18"><a href="#cb80-18" aria-hidden="true" tabindex="-1"></a>train_idx <span class="ot">&lt;-</span> <span class="fu">createDataPartition</span>(df<span class="sc">$</span>stratify_col, <span class="at">p =</span> <span class="fl">0.8</span>, <span class="at">list =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb80-19"><a href="#cb80-19" aria-hidden="true" tabindex="-1"></a>train_df <span class="ot">&lt;-</span> df[train_idx, ]</span>
+<span id="cb80-20"><a href="#cb80-20" aria-hidden="true" tabindex="-1"></a>temp_df <span class="ot">&lt;-</span> df[<span class="sc">-</span>train_idx, ]</span>
+<span id="cb80-21"><a href="#cb80-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb80-22"><a href="#cb80-22" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Now split validation and test (50-50 from remaining 20%)</span></span>
+<span id="cb80-23"><a href="#cb80-23" aria-hidden="true" tabindex="-1"></a>val_idx <span class="ot">&lt;-</span> <span class="fu">createDataPartition</span>(temp_df<span class="sc">$</span>stratify_col, <span class="at">p =</span> <span class="fl">0.5</span>, <span class="at">list =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb80-24"><a href="#cb80-24" aria-hidden="true" tabindex="-1"></a>val_df <span class="ot">&lt;-</span> temp_df[val_idx, ]</span>
+<span id="cb80-25"><a href="#cb80-25" aria-hidden="true" tabindex="-1"></a>test_df <span class="ot">&lt;-</span> temp_df[<span class="sc">-</span>val_idx, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="distribution-check" class="level3">
+<h3 class="anchored" data-anchor-id="distribution-check">Distribution Check</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to compute proportion tables</span></span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>get_distribution <span class="ot">&lt;-</span> <span class="cf">function</span>(data) {</span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb81-4"><a href="#cb81-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">sentiment =</span> <span class="fu">prop.table</span>(<span class="fu">table</span>(data<span class="sc">$</span>sentiment)),</span>
+<span id="cb81-5"><a href="#cb81-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">length_bin =</span> <span class="fu">prop.table</span>(<span class="fu">table</span>(data<span class="sc">$</span>length_bin)),</span>
+<span id="cb81-6"><a href="#cb81-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">nrow</span>(data)</span>
+<span id="cb81-7"><a href="#cb81-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb81-8"><a href="#cb81-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb81-9"><a href="#cb81-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb81-10"><a href="#cb81-10" aria-hidden="true" tabindex="-1"></a>train_dist <span class="ot">&lt;-</span> <span class="fu">get_distribution</span>(train_df)</span>
+<span id="cb81-11"><a href="#cb81-11" aria-hidden="true" tabindex="-1"></a>val_dist <span class="ot">&lt;-</span> <span class="fu">get_distribution</span>(val_df)</span>
+<span id="cb81-12"><a href="#cb81-12" aria-hidden="true" tabindex="-1"></a>test_dist <span class="ot">&lt;-</span> <span class="fu">get_distribution</span>(test_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="bar-plotting-of-distributions" class="level3">
+<h3 class="anchored" data-anchor-id="bar-plotting-of-distributions">Bar Plotting of Distributions</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to data.frame for plotting</span></span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>dist_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Split =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"Train"</span>, <span class="st">"Val"</span>, <span class="st">"Test"</span>), <span class="at">each =</span> <span class="dv">3</span>),</span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Length =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"short"</span>, <span class="st">"medium"</span>, <span class="st">"long"</span>), <span class="at">times =</span> <span class="dv">3</span>),</span>
+<span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Proportion =</span> <span class="fu">c</span>(train_dist<span class="sc">$</span>length_bin, val_dist<span class="sc">$</span>length_bin, test_dist<span class="sc">$</span>length_bin)</span>
+<span id="cb82-6"><a href="#cb82-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb82-7"><a href="#cb82-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-8"><a href="#cb82-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dist_df, <span class="fu">aes</span>(<span class="at">x =</span> Split, <span class="at">y =</span> Proportion, <span class="at">fill =</span> Length)) <span class="sc">+</span></span>
+<span id="cb82-9"><a href="#cb82-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb82-10"><a href="#cb82-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Review Length Bin Distribution by Dataset Split"</span>) <span class="sc">+</span></span>
+<span id="cb82-11"><a href="#cb82-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="main_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="building-classification-models" class="level1">
+<h1>Building Classification Models</h1>
+<section id="syuzhet-rule-based" class="level2">
+<h2 class="anchored" data-anchor-id="syuzhet-rule-based">Syuzhet (Rule Based)</h2>
+<ol type="1">
+<li><p>Syuzhet is a rule-based sentiment analysis tool designed to extract emotional and narrative structures from text, originally developed for literary and long-form content.</p></li>
+<li><p>It uses a Bag of Words approach and computes sentiment by matching individual words in the text to a predefined sentiment lexicon (e.g., positive or negative words) and summing their scores to produce an overall sentiment score.</p></li>
+</ol>
+<section id="applying-sentiment-scoring" class="level3">
+<h3 class="anchored" data-anchor-id="applying-sentiment-scoring">Applying Sentiment Scoring</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Install if needed ---</span></span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pbapply)</span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(syuzhet)</span>
+<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Make sure text is character ---</span></span>
+<span id="cb83-6"><a href="#cb83-6" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>cleaned_text <span class="ot">&lt;-</span> <span class="fu">as.character</span>(df<span class="sc">$</span>cleaned_text)</span>
+<span id="cb83-7"><a href="#cb83-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb83-8"><a href="#cb83-8" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Syuzhet Sentiment with Progress Bar ---</span></span>
+<span id="cb83-9"><a href="#cb83-9" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>syuzhet_score <span class="ot">&lt;-</span> pbapply<span class="sc">::</span><span class="fu">pbsapply</span>(df<span class="sc">$</span>cleaned_text, get_sentiment, <span class="at">method =</span> <span class="st">"syuzhet"</span>)</span>
+<span id="cb83-10"><a href="#cb83-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb83-11"><a href="#cb83-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Save to CSV</span></span>
+<span id="cb83-12"><a href="#cb83-12" aria-hidden="true" tabindex="-1"></a><span class="fu">fwrite</span>(df, <span class="st">"Amazon_Reviews_Syuzhet_Sentiment.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="evaluation" class="level3">
+<h3 class="anchored" data-anchor-id="evaluation">Evaluation</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the CSV file you previously saved</span></span>
+<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="st">"Amazon_Reviews_Syuzhet_Sentiment.csv"</span>)</span>
+<span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb84-4"><a href="#cb84-4" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>syuzhet_sentiment <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(df<span class="sc">$</span>syuzhet_score <span class="sc">&gt;=</span> <span class="fl">0.05</span>, <span class="st">"positive"</span>,</span>
+<span id="cb84-5"><a href="#cb84-5" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">ifelse</span>(df<span class="sc">$</span>syuzhet_score <span class="sc">&lt;=</span> <span class="sc">-</span><span class="fl">0.05</span>, <span class="st">"negative"</span>, <span class="st">"neutral"</span>))</span>
+<span id="cb84-6"><a href="#cb84-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb84-7"><a href="#cb84-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb84-8"><a href="#cb84-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb84-9"><a href="#cb84-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to factors for classification report</span></span>
+<span id="cb84-10"><a href="#cb84-10" aria-hidden="true" tabindex="-1"></a>truth <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(df<span class="sc">$</span>sentiment)</span>
+<span id="cb84-11"><a href="#cb84-11" aria-hidden="true" tabindex="-1"></a>pred  <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(df<span class="sc">$</span>syuzhet_sentiment)</span>
+<span id="cb84-12"><a href="#cb84-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb84-13"><a href="#cb84-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate confusion matrix</span></span>
+<span id="cb84-14"><a href="#cb84-14" aria-hidden="true" tabindex="-1"></a>cm_syuzhet <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(<span class="fu">as.factor</span>(pred), truth)</span>
+<span id="cb84-15"><a href="#cb84-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb84-16"><a href="#cb84-16" aria-hidden="true" tabindex="-1"></a>cm_syuzhet</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction negative neutral positive
+  negative    38724   17987   204556
+  neutral     10424   12674   174840
+  positive    54589   76050  2537341
+
+Overall Statistics
+                                          
+               Accuracy : 0.8278          
+                 95% CI : (0.8274, 0.8282)
+    No Information Rate : 0.9327          
+    P-Value [Acc &gt; NIR] : 1               
+                                          
+                  Kappa : 0.1362          
+                                          
+ Mcnemar's Test P-Value : &lt;2e-16          
+
+Statistics by Class:
+
+                     Class: negative Class: neutral Class: positive
+Sensitivity                  0.37329       0.118769          0.8699
+Specificity                  0.92639       0.938664          0.3792
+Pos Pred Value               0.14822       0.064030          0.9510
+Neg Pred Value               0.97732       0.967897          0.1738
+Prevalence                   0.03317       0.034124          0.9327
+Detection Rate               0.01238       0.004053          0.8114
+Detection Prevalence         0.08355       0.063296          0.8532
+Balanced Accuracy            0.64984       0.528717          0.6246</code></pre>
+</div>
+</div>
+<p>The Syuzhet-based sentiment classification model achieved an overall accuracy of 82.78%, which initially appears strong. However, this result is largely driven by the dataset’s class imbalance, where over 93% of reviews are positive. This is reflected in the No Information Rate (NIR) of 93.27%, indicating that a naive model predicting only “positive” would outperform Syuzhet in raw accuracy. The Kappa statistic of 0.1362 confirms poor agreement between predicted and true labels beyond chance. While Syuzhet performs well in identifying positive reviews (with precision of 95% and recall of 87%), its performance significantly degrades for neutral and negative reviews. Specifically, it captures only 11.9% of true neutral reviews and 37.3% of true negative reviews, with low precision for both classes. These results suggest that while Syuzhet is useful for flagging clearly positive content, it struggles with more nuanced sentiment, and is not well-suited for imbalanced datasets without additional modeling or correction strategies.</p>
+</section>
+</section>
+<section id="logistic-regression-ml" class="level2">
+<h2 class="anchored" data-anchor-id="logistic-regression-ml">Logistic Regression (ML)</h2>
+<p>We would like to see whether a review is likely to result in a high (4-5 stars) or low (1-2 stars) rating using logistic regression based on textual features.</p>
+<section id="word-frequency-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="word-frequency-analysis">Word Frequency Analysis</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidytext)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'tidytext' was built under R version 4.4.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(textdata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'textdata' was built under R version 4.4.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb90-3"><a href="#cb90-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb90-4"><a href="#cb90-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pROC)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Type 'citation("pROC")' for a citation.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'pROC'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    cov, smooth, var</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb94-4"><a href="#cb94-4" aria-hidden="true" tabindex="-1"></a><span class="co"># train_df from text processing</span></span>
+<span id="cb94-5"><a href="#cb94-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb94-6"><a href="#cb94-6" aria-hidden="true" tabindex="-1"></a>train_df <span class="ot">&lt;-</span> train_df <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">ID =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(train_df))</span>
+<span id="cb94-7"><a href="#cb94-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb94-8"><a href="#cb94-8" aria-hidden="true" tabindex="-1"></a>temp <span class="ot">&lt;-</span> train_df <span class="sc">%&gt;%</span></span>
+<span id="cb94-9"><a href="#cb94-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ID, cleaned_text) <span class="sc">%&gt;%</span></span>
+<span id="cb94-10"><a href="#cb94-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">reviewText =</span> cleaned_text) <span class="sc">%&gt;%</span></span>
+<span id="cb94-11"><a href="#cb94-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(<span class="at">output =</span> word, <span class="at">input =</span> reviewText) <span class="sc">%&gt;%</span></span>
+<span id="cb94-12"><a href="#cb94-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(<span class="fu">get_sentiments</span>(<span class="st">"bing"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb94-13"><a href="#cb94-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(ID, word) <span class="sc">%&gt;%</span></span>
+<span id="cb94-14"><a href="#cb94-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_tf_idf</span>(word, ID, n)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(word)`</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in inner_join(., get_sentiments("bing")): Detected an unexpected many-to-many relationship between `x` and `y`.
+ℹ Row 2819697 of `x` matches multiple rows in `y`.
+ℹ Row 4229 of `y` matches multiple rows in `x`.
+ℹ If a many-to-many relationship is expected, set `relationship =
+  "many-to-many"` to silence this warning.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add Overall Ratings Back</span></span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a>temp <span class="ot">&lt;-</span> temp <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(train_df <span class="sc">%&gt;%</span> <span class="fu">select</span>(ID, overall))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(ID)`</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a>temp <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(word) <span class="sc">%&gt;%</span></span>
+<span id="cb99-2"><a href="#cb99-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">counts =</span> <span class="fu">sum</span>(n)) <span class="sc">%&gt;%</span></span>
+<span id="cb99-3"><a href="#cb99-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span>counts) <span class="sc">%&gt;%</span></span>
+<span id="cb99-4"><a href="#cb99-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Proportion =</span> <span class="fu">cumsum</span>(counts)<span class="sc">/</span><span class="fu">sum</span>(counts), <span class="at">freq_rank =</span> <span class="fu">row_number</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb99-5"><a href="#cb99-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(freq_rank, Proportion)) <span class="sc">+</span></span>
+<span id="cb99-6"><a href="#cb99-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb99-7"><a href="#cb99-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.8</span>, <span class="at">linetype =</span> <span class="dv">2</span>, <span class="at">colour =</span> <span class="st">'red'</span>) <span class="sc">+</span></span>
+<span id="cb99-8"><a href="#cb99-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">60</span>, <span class="at">linetype =</span> <span class="dv">2</span>, <span class="at">colour =</span> <span class="st">'red'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="main_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Interpretation</strong></p>
+<ul>
+<li><p>X-axis (freq_rank): The rank of words by frequency (1 = most frequent, 2 = next most frequent, etc.)</p></li>
+<li><p>Y-axis (Proportion): Cumulative proportion of all word occurrences covered up to that rank</p></li>
+<li><p>The horizontal line at ~0.80 means you’re marking where 80% of all word occurrences are reached</p></li>
+<li><p>The vertical line shows the number of unique words needed to reach that 80% coverage — in this case, around 150–200 words</p></li>
+</ul>
+<p>Small vocabulary covers most usage: ~200 most frequent sentiment words cover 80% of all word occurrences. Feature selection opportunity: You can safely reduce your feature space (e.g., TF-IDF features) to just the top 200–300 words without losing much information. Zipf’s Law in action: This distribution is consistent with Zipf’s Law — few words are used very frequently, and many are rare</p>
+</section>
+<section id="bar-plot-of-top-60-frequent-words" class="level3">
+<h3 class="anchored" data-anchor-id="bar-plot-of-top-60-frequent-words">Bar Plot of Top 60 Frequent Words</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a>temp <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(word) <span class="sc">%&gt;%</span></span>
+<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">counts =</span> <span class="fu">sum</span>(n)) <span class="sc">%&gt;%</span></span>
+<span id="cb100-3"><a href="#cb100-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">word =</span> <span class="fu">reorder</span>(word, counts)) <span class="sc">%&gt;%</span></span>
+<span id="cb100-4"><a href="#cb100-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span>counts) <span class="sc">%&gt;%</span></span>
+<span id="cb100-5"><a href="#cb100-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">60</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb100-6"><a href="#cb100-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> word, <span class="at">x =</span> counts)) <span class="sc">+</span></span>
+<span id="cb100-7"><a href="#cb100-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">'identity'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="main_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="fitting-logistic-regression-model" class="level3">
+<h3 class="anchored" data-anchor-id="fitting-logistic-regression-model">Fitting Logistic Regression Model</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select Top 60 Words as Features (Dimension Reduction)</span></span>
+<span id="cb101-2"><a href="#cb101-2" aria-hidden="true" tabindex="-1"></a>words <span class="ot">&lt;-</span> temp <span class="sc">%&gt;%</span></span>
+<span id="cb101-3"><a href="#cb101-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(word) <span class="sc">%&gt;%</span></span>
+<span id="cb101-4"><a href="#cb101-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">counts =</span> <span class="fu">sum</span>(n)) <span class="sc">%&gt;%</span></span>
+<span id="cb101-5"><a href="#cb101-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span>counts) <span class="sc">%&gt;%</span></span>
+<span id="cb101-6"><a href="#cb101-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">60</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb101-7"><a href="#cb101-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(word)</span>
+<span id="cb101-8"><a href="#cb101-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb101-9"><a href="#cb101-9" aria-hidden="true" tabindex="-1"></a><span class="co"># We limit the feature space so the model doesn’t explode in dimensionality (60 columns instead of thousands)</span></span>
+<span id="cb101-10"><a href="#cb101-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb101-11"><a href="#cb101-11" aria-hidden="true" tabindex="-1"></a>temp2 <span class="ot">&lt;-</span> temp <span class="sc">%&gt;%</span> <span class="fu">filter</span>(word <span class="sc">%in%</span> words)</span>
+<span id="cb101-12"><a href="#cb101-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb101-13"><a href="#cb101-13" aria-hidden="true" tabindex="-1"></a>dat_feat <span class="ot">&lt;-</span> temp2 <span class="sc">%&gt;%</span></span>
+<span id="cb101-14"><a href="#cb101-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cast_dtm</span>(ID, word, tf_idf) <span class="sc">%&gt;%</span></span>
+<span id="cb101-15"><a href="#cb101-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
+<span id="cb101-16"><a href="#cb101-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb101-17"><a href="#cb101-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge with overall rating for logistic regression</span></span>
+<span id="cb101-18"><a href="#cb101-18" aria-hidden="true" tabindex="-1"></a>dat_feat <span class="ot">&lt;-</span> train_df <span class="sc">%&gt;%</span></span>
+<span id="cb101-19"><a href="#cb101-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ID, overall) <span class="sc">%&gt;%</span></span>
+<span id="cb101-20"><a href="#cb101-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(<span class="fu">data.frame</span>(<span class="at">ID =</span> <span class="fu">as.numeric</span>(<span class="fu">rownames</span>(dat_feat)), dat_feat))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(ID)`</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>dat_feat[<span class="fu">is.na</span>(dat_feat)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb103-3"><a href="#cb103-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb103-4"><a href="#cb103-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic regression model</span></span>
+<span id="cb103-5"><a href="#cb103-5" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">I</span>(overall <span class="sc">&lt;</span> <span class="dv">4</span>) <span class="sc">~</span> . <span class="sc">-</span> ID <span class="sc">-</span> overall, <span class="at">data =</span> dat_feat, <span class="at">family =</span> <span class="fu">binomial</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in terms.formula(formula, data = data): 'varlist' has changed (from
+nvar=62) to new 63 after EncodeVars() -- should no longer happen!</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = I(overall &lt; 4) ~ . - ID - overall, family = binomial(), 
+    data = dat_feat)
+
+Coefficients:
+              Estimate Std. Error  z value Pr(&gt;|z|)    
+(Intercept)  -0.790071   0.003048 -259.251  &lt; 2e-16 ***
+great        -2.626555   0.012180 -215.641  &lt; 2e-16 ***
+good         -0.861874   0.005741 -150.123  &lt; 2e-16 ***
+love         -2.138352   0.013321 -160.519  &lt; 2e-16 ***
+nice         -0.681954   0.006961  -97.963  &lt; 2e-16 ***
+well         -0.822862   0.009189  -89.548  &lt; 2e-16 ***
+better        0.091972   0.006275   14.657  &lt; 2e-16 ***
+clean        -0.372209   0.016471  -22.598  &lt; 2e-16 ***
+like          0.003701   0.005531    0.669    0.503    
+fine         -0.040961   0.007232   -5.664 1.48e-08 ***
+pretty       -0.005094   0.007893   -0.645    0.519    
+soft         -0.225002   0.013515  -16.648  &lt; 2e-16 ***
+wonderful    -1.530424   0.028856  -53.036  &lt; 2e-16 ***
+super        -0.249361   0.012056  -20.683  &lt; 2e-16 ***
+works        -0.681903   0.009035  -75.476  &lt; 2e-16 ***
+best         -0.871768   0.010647  -81.881  &lt; 2e-16 ***
+fast         -0.605938   0.013562  -44.680  &lt; 2e-16 ***
+problem       0.041654   0.009675    4.305 1.67e-05 ***
+pleased      -1.005717   0.027542  -36.515  &lt; 2e-16 ***
+enough        0.142467   0.008452   16.855  &lt; 2e-16 ***
+happy        -0.629921   0.011714  -53.774  &lt; 2e-16 ***
+perfect      -1.771665   0.019884  -89.102  &lt; 2e-16 ***
+top           0.093837   0.009439    9.941  &lt; 2e-16 ***
+excellent    -1.746475   0.023153  -75.432  &lt; 2e-16 ***
+thank        -0.898284   0.020246  -44.368  &lt; 2e-16 ***
+favorite     -0.778549   0.014364  -54.203  &lt; 2e-16 ***
+worked       -0.107305   0.008214  -13.064  &lt; 2e-16 ***
+recommended  -0.618951   0.019636  -31.522  &lt; 2e-16 ***
+easy         -1.036540   0.012955  -80.012  &lt; 2e-16 ***
+loved        -1.088437   0.013115  -82.989  &lt; 2e-16 ***
+loves        -1.277017   0.019167  -66.627  &lt; 2e-16 ***
+hard          0.285464   0.007592   37.602  &lt; 2e-16 ***
+awesome      -1.421540   0.024925  -57.033  &lt; 2e-16 ***
+amazing      -1.521300   0.028606  -53.180  &lt; 2e-16 ***
+recommend    -0.485544   0.011039  -43.983  &lt; 2e-16 ***
+problems     -0.357343   0.012855  -27.797  &lt; 2e-16 ***
+worth         0.044081   0.008086    5.451 5.00e-08 ***
+work          0.309769   0.006113   50.675  &lt; 2e-16 ***
+disappointed  0.875431   0.010666   82.079  &lt; 2e-16 ***
+beautiful    -0.814868   0.015567  -52.345  &lt; 2e-16 ***
+issues       -0.292212   0.013361  -21.870  &lt; 2e-16 ***
+expensive     0.098666   0.010353    9.530  &lt; 2e-16 ***
+bad           0.525878   0.008073   65.137  &lt; 2e-16 ***
+strong       -0.242836   0.012994  -18.688  &lt; 2e-16 ***
+enjoy        -0.392392   0.011367  -34.521  &lt; 2e-16 ***
+cheap         0.608412   0.008890   68.436  &lt; 2e-16 ***
+glad         -0.642662   0.018837  -34.116  &lt; 2e-16 ***
+liked        -0.170285   0.007831  -21.745  &lt; 2e-16 ***
+right        -0.132664   0.008470  -15.663  &lt; 2e-16 ***
+cute         -0.167281   0.006755  -24.765  &lt; 2e-16 ***
+fantastic    -1.223146   0.033311  -36.719  &lt; 2e-16 ***
+hot          -0.094945   0.012477   -7.609 2.75e-14 ***
+free          0.076937   0.011028    6.977 3.02e-12 ***
+enjoyed      -0.763370   0.012088  -63.152  &lt; 2e-16 ***
+perfectly    -1.233628   0.023021  -53.588  &lt; 2e-16 ***
+interesting  -0.083088   0.007337  -11.324  &lt; 2e-16 ***
+cool         -0.349330   0.012163  -28.721  &lt; 2e-16 ***
+fun          -0.595854   0.011099  -53.684  &lt; 2e-16 ***
+sturdy       -0.509033   0.016640  -30.591  &lt; 2e-16 ***
+comfortable  -0.476254   0.010719  -44.429  &lt; 2e-16 ***
+plot          0.403189   0.013464   29.945  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 2095950  on 2501753  degrees of freedom
+Residual deviance: 1745716  on 2501693  degrees of freedom
+AIC: 1745838
+
+Number of Fisher Scoring iterations: 7</code></pre>
+</div>
+</div>
+<p>The logistic regression model effectively predicts low-rated reviews using sentiment-bearing keywords. Most coefficients are strongly negative and statistically significant, indicating that words like “great,” “perfect,” and “excellent” are highly associated with high ratings. The model substantially reduces deviance from the null model and has a low AIC, suggesting a good overall fit. This confirms that positive language in reviews strongly decreases the likelihood of receiving a low rating.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize Model Coefficients</span></span>
+<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a>coef <span class="ot">&lt;-</span> <span class="fu">coef</span>(mod)[<span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(coef, <span class="at">words =</span> <span class="fu">names</span>(coef)) <span class="sc">%&gt;%</span></span>
+<span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> coef, <span class="at">y =</span> <span class="fu">reorder</span>(words, <span class="fu">abs</span>(coef)))) <span class="sc">+</span></span>
+<span id="cb107-5"><a href="#cb107-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">'identity'</span>) <span class="sc">+</span></span>
+<span id="cb107-6"><a href="#cb107-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">'log(OR) of low rating'</span>, <span class="at">y =</span> <span class="st">'keywords'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="main_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Words strongly associated with high ratings:</strong></p>
+<ul>
+<li>Words like “great”, “perfect”, “excellent”, “awesome”, “pleasant” have strong negative log(OR) values.</li>
+</ul>
+<pre><code>-   These words decrease the likelihood of a review being rated low.
+
+-   Their appearance makes a review more likely to be positive.</code></pre>
+<p><strong>Words associated with low ratings:</strong></p>
+<ul>
+<li><p>Words like “disappointed”, “issue”, “problem”, “returned”, “expensive” have positive log(OR) values.</p>
+<ul>
+<li>Their presence increases the likelihood that a review is negative.</li>
+</ul></li>
+</ul>
+<p><strong>Neutral or ambiguous words:</strong></p>
+<ul>
+<li><p>Words near 0 (e.g., “recommend”, “value”, “product”) are less discriminative.</p>
+<ul>
+<li>These might appear in both high and low ratings depending on context.</li>
+</ul></li>
+</ul>
+</section>
+<section id="evaluation-1" class="level3">
+<h3 class="anchored" data-anchor-id="evaluation-1">Evaluation</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pROC)</span>
+<span id="cb109-2"><a href="#cb109-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb109-3"><a href="#cb109-3" aria-hidden="true" tabindex="-1"></a><span class="co"># confusion matrix</span></span>
+<span id="cb109-4"><a href="#cb109-4" aria-hidden="true" tabindex="-1"></a>pred<span class="ot">&lt;-</span><span class="fu">ifelse</span>(<span class="fu">predict</span>(mod)<span class="sc">&gt;</span><span class="dv">0</span>,<span class="st">'low'</span>,<span class="st">'high'</span>)</span>
+<span id="cb109-5"><a href="#cb109-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb109-6"><a href="#cb109-6" aria-hidden="true" tabindex="-1"></a>real<span class="ot">&lt;-</span><span class="fu">ifelse</span>(dat_feat<span class="sc">$</span>overall<span class="sc">&lt;</span><span class="dv">4</span>,<span class="st">'low'</span>,<span class="st">'high'</span>)</span>
+<span id="cb109-7"><a href="#cb109-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb109-8"><a href="#cb109-8" aria-hidden="true" tabindex="-1"></a>cm_lr <span class="ot">&lt;-</span> <span class="fu">confusionMatrix</span>(<span class="fu">as.factor</span>(pred),<span class="fu">as.factor</span>(real))</span>
+<span id="cb109-9"><a href="#cb109-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb109-10"><a href="#cb109-10" aria-hidden="true" tabindex="-1"></a>cm_lr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction    high     low
+      high 2121111  350923
+      low    10852   18868
+                                         
+               Accuracy : 0.8554         
+                 95% CI : (0.855, 0.8558)
+    No Information Rate : 0.8522         
+    P-Value [Acc &gt; NIR] : &lt; 2.2e-16      
+                                         
+                  Kappa : 0.0741         
+                                         
+ Mcnemar's Test P-Value : &lt; 2.2e-16      
+                                         
+            Sensitivity : 0.99491        
+            Specificity : 0.05102        
+         Pos Pred Value : 0.85804        
+         Neg Pred Value : 0.63486        
+             Prevalence : 0.85219        
+         Detection Rate : 0.84785        
+   Detection Prevalence : 0.98812        
+      Balanced Accuracy : 0.52297        
+                                         
+       'Positive' Class : high           
+                                         </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a>roc1<span class="ot">&lt;-</span><span class="fu">roc</span>(real<span class="sc">~</span><span class="fu">predict</span>(mod))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Setting levels: control = high, case = low</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Setting direction: controls &lt; cases</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(roc1,<span class="at">print.auc=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="main_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a><span class="fu">auc</span>(roc1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Area under the curve: 0.7874</code></pre>
+</div>
+</div>
+<p>0.83 ⇒&nbsp;<strong>83&nbsp;% of the time</strong> it orders the pair correctly.<br>
+Values:<br>
+•&nbsp;&gt;&nbsp;0.90&nbsp;=&nbsp;excellent<br>
+•&nbsp;0.80–0.90&nbsp;=&nbsp;good<br>
+•&nbsp;0.70–0.80&nbsp;=&nbsp;fair<br>
+•&nbsp;0.50–0.70&nbsp;=&nbsp;weak</p>
+<p>The result is solid for a first pass, but there’s still head‑room before you hit “excellent.”</p>
+</section>
+</section>
+<section id="model-comaprison" class="level2">
+<h2 class="anchored" data-anchor-id="model-comaprison">Model Comaprison</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb117-3"><a href="#cb117-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb117-4"><a href="#cb117-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the overall Accuracy and Kappa:</span></span>
+<span id="cb117-5"><a href="#cb117-5" aria-hidden="true" tabindex="-1"></a>stats_lr <span class="ot">&lt;-</span> cm_lr<span class="sc">$</span>overall[<span class="fu">c</span>(<span class="st">"Accuracy"</span>, <span class="st">"Kappa"</span>)]</span>
+<span id="cb117-6"><a href="#cb117-6" aria-hidden="true" tabindex="-1"></a>stats_syz <span class="ot">&lt;-</span> cm_syuzhet<span class="sc">$</span>overall[<span class="fu">c</span>(<span class="st">"Accuracy"</span>, <span class="st">"Kappa"</span>)]</span>
+<span id="cb117-7"><a href="#cb117-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb117-8"><a href="#cb117-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Build a comparison table</span></span>
+<span id="cb117-9"><a href="#cb117-9" aria-hidden="true" tabindex="-1"></a>comparison_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb117-10"><a href="#cb117-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">Model    =</span> <span class="fu">c</span>(<span class="st">"Logistic Regression"</span>, <span class="st">"Syuzhet"</span>),</span>
+<span id="cb117-11"><a href="#cb117-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">Accuracy =</span> <span class="fu">c</span>(stats_lr[<span class="st">"Accuracy"</span>], stats_syz[<span class="st">"Accuracy"</span>]),</span>
+<span id="cb117-12"><a href="#cb117-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">Kappa    =</span> <span class="fu">c</span>(stats_lr[<span class="st">"Kappa"</span>],    stats_syz[<span class="st">"Kappa"</span>]),</span>
+<span id="cb117-13"><a href="#cb117-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">NULL</span>,</span>
+<span id="cb117-14"><a href="#cb117-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb117-15"><a href="#cb117-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb117-16"><a href="#cb117-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb117-17"><a href="#cb117-17" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(comparison_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                Model  Accuracy      Kappa
+1 Logistic Regression 0.8553915 0.07409306
+2             Syuzhet 0.8278177 0.13617676</code></pre>
+</div>
+</div>
+<p>Accuracy</p>
+<ul>
+<li><p>Logistic Regression: 85.21%</p></li>
+<li><p>Syuzhet lexicon: 82.78%</p></li>
+</ul>
+<p>Cohen’s Kappa (agreement beyond random chance)</p>
+<ul>
+<li><p>Logistic Regression: 0.0006 (almost zero!)</p></li>
+<li><p>Syuzhet: 0.1362 (a small but non-negligible agreement)</p>
+<p>A Kappa near 0 means that—even though LR’s raw accuracy is higher—it’s basically doing no better than random (given class imbalance). Syuzhet actually shows slight real agreement beyond chance.</p></li>
+</ul>
+<p><strong>Bottom line</strong>: Logistic regression “looks” better by accuracy, but Kappa and baseline comparison reveal it isn’t really learning beyond the dominant class. Focusing on balanced metrics, handling imbalance, and enriching features may give us a much clearer picture of true predictive power.</p>
+</section>
+</section>
+<section id="building-recommender" class="level1">
+<h1>Building Recommender</h1>
+<p>Content-Based Recommender System</p>
+<p>Developing a content-based recommendation system that suggests similar products based on features derived from user reviews. The goal is understanding how customer sentiment and review behavior can guide more meaningful product suggestions.</p>
+<p>Method summary:</p>
+<ul>
+<li><p>Feature Engineering:</p>
+<ul>
+<li><p>Converted sentiment into a numerical score</p>
+<ul>
+<li>positive = 1, neutral = 0.5, negative = 0</li>
+</ul></li>
+<li><p>Encoded review length as an ordinal score</p>
+<ul>
+<li>small &lt; medium &lt; large</li>
+</ul></li>
+<li><p>Combined these with the original star rating to form a feature matrix</p></li>
+</ul></li>
+<li><p>Normalization and Similarity Calculation:</p>
+<ul>
+<li>Utilizing the <code>scale()</code> function ensures that all features contribute equally to the similarity calculation, regardless of their original scales. This normalization step is essential before computing cosine similarity, as it prevents features with larger numeric ranges from disproportionately influencing the distance metric</li>
+</ul></li>
+<li><p>Recommendation Logic:</p>
+<ul>
+<li><p>Split into 80% train / 20% test</p></li>
+<li><p>Randomly picked 3 test items as “queries.”</p></li>
+<li><p>For each query, retrieved the top 5 train items with highest cosine‑similarity.</p></li>
+</ul></li>
+</ul>
+<section id="baseline-model" class="level2">
+<h2 class="anchored" data-anchor-id="baseline-model">Baseline Model</h2>
+<section id="feature-engineering-1" class="level3">
+<h3 class="anchored" data-anchor-id="feature-engineering-1">Feature Engineering</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb119"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb119-2"><a href="#cb119-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb119-3"><a href="#cb119-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
+<span id="cb119-4"><a href="#cb119-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb119-5"><a href="#cb119-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(proxy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'proxy'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    as.dist, dist</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:base':
+
+    as.matrix</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb123"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
+<span id="cb123-2"><a href="#cb123-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb123-3"><a href="#cb123-3" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="st">"Amazon_Reviews_Processed.csv"</span>, <span class="at">nrows =</span> <span class="dv">20000</span>)</span>
+<span id="cb123-4"><a href="#cb123-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb123-5"><a href="#cb123-5" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>sentiment_score <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(data<span class="sc">$</span>sentiment <span class="sc">==</span> <span class="st">"positive"</span>, <span class="dv">1</span>,</span>
+<span id="cb123-6"><a href="#cb123-6" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">ifelse</span>(data<span class="sc">$</span>sentiment <span class="sc">==</span> <span class="st">"neutral"</span>, <span class="fl">0.5</span>, <span class="dv">0</span>))</span>
+<span id="cb123-7"><a href="#cb123-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb123-8"><a href="#cb123-8" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>length_score <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">as.factor</span>(data<span class="sc">$</span>length))</span>
+<span id="cb123-9"><a href="#cb123-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb123-10"><a href="#cb123-10" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>category <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(data<span class="sc">$</span>category)</span>
+<span id="cb123-11"><a href="#cb123-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">nlevels</span>(data<span class="sc">$</span>category) <span class="sc">&gt;</span> <span class="dv">1</span>) {</span>
+<span id="cb123-12"><a href="#cb123-12" aria-hidden="true" tabindex="-1"></a>  category_dummies <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span> category <span class="sc">-</span> <span class="dv">1</span>, <span class="at">data =</span> data)</span>
+<span id="cb123-13"><a href="#cb123-13" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb123-14"><a href="#cb123-14" aria-hidden="true" tabindex="-1"></a>  category_dummies <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb123-15"><a href="#cb123-15" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="feature-matrix-normalization" class="level3">
+<h3 class="anchored" data-anchor-id="feature-matrix-normalization">Feature Matrix &amp; Normalization</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb124"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine all features into one matrix</span></span>
+<span id="cb124-2"><a href="#cb124-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(category_dummies)) {</span>
+<span id="cb124-3"><a href="#cb124-3" aria-hidden="true" tabindex="-1"></a>  features <span class="ot">&lt;-</span> <span class="fu">cbind</span>(</span>
+<span id="cb124-4"><a href="#cb124-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">rating =</span> data<span class="sc">$</span>overall,</span>
+<span id="cb124-5"><a href="#cb124-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">sentiment =</span> data<span class="sc">$</span>sentiment_score,</span>
+<span id="cb124-6"><a href="#cb124-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">length =</span> data<span class="sc">$</span>length_score,</span>
+<span id="cb124-7"><a href="#cb124-7" aria-hidden="true" tabindex="-1"></a>    category_dummies</span>
+<span id="cb124-8"><a href="#cb124-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb124-9"><a href="#cb124-9" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb124-10"><a href="#cb124-10" aria-hidden="true" tabindex="-1"></a>  features <span class="ot">&lt;-</span> <span class="fu">cbind</span>(</span>
+<span id="cb124-11"><a href="#cb124-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">rating =</span> data<span class="sc">$</span>overall,</span>
+<span id="cb124-12"><a href="#cb124-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">sentiment =</span> data<span class="sc">$</span>sentiment_score,</span>
+<span id="cb124-13"><a href="#cb124-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">length =</span> data<span class="sc">$</span>length_score</span>
+<span id="cb124-14"><a href="#cb124-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb124-15"><a href="#cb124-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb124-16"><a href="#cb124-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb124-17"><a href="#cb124-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Scale features to mean=0, sd=1</span></span>
+<span id="cb124-18"><a href="#cb124-18" aria-hidden="true" tabindex="-1"></a>features_norm <span class="ot">&lt;-</span> <span class="fu">scale</span>(features)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="cosine-similiarty" class="level3">
+<h3 class="anchored" data-anchor-id="cosine-similiarty">Cosine Similiarty</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb125"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb125-1"><a href="#cb125-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Define Similarity Metric</span></span>
+<span id="cb125-2"><a href="#cb125-2" aria-hidden="true" tabindex="-1"></a>similarity_matrix <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">as.matrix</span>(<span class="fu">dist</span>(features_norm, <span class="at">method =</span> <span class="st">"cosine"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="traintest-split" class="level3">
+<h3 class="anchored" data-anchor-id="traintest-split">Train/Test Split</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb126"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb126-1"><a href="#cb126-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Create a Train/Test Split</span></span>
+<span id="cb126-2"><a href="#cb126-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb126-3"><a href="#cb126-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(data)</span>
+<span id="cb126-4"><a href="#cb126-4" aria-hidden="true" tabindex="-1"></a>train_idx <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n, <span class="at">size =</span> <span class="fl">0.8</span> <span class="sc">*</span> n)</span>
+<span id="cb126-5"><a href="#cb126-5" aria-hidden="true" tabindex="-1"></a>test_idx <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="dv">1</span><span class="sc">:</span>n, train_idx)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="generate-recommendation" class="level3">
+<h3 class="anchored" data-anchor-id="generate-recommendation">Generate Recommendation</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb127"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb127-1"><a href="#cb127-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Draw 3 random test items to query</span></span>
+<span id="cb127-2"><a href="#cb127-2" aria-hidden="true" tabindex="-1"></a>query_indices <span class="ot">&lt;-</span> <span class="fu">sample</span>(test_idx, <span class="dv">3</span>)</span>
+<span id="cb127-3"><a href="#cb127-3" aria-hidden="true" tabindex="-1"></a>recommendations <span class="ot">&lt;-</span> <span class="fu">lapply</span>(query_indices, <span class="cf">function</span>(i) {</span>
+<span id="cb127-4"><a href="#cb127-4" aria-hidden="true" tabindex="-1"></a>  sim_vec <span class="ot">&lt;-</span> similarity_matrix[i, train_idx]</span>
+<span id="cb127-5"><a href="#cb127-5" aria-hidden="true" tabindex="-1"></a>  top_idx <span class="ot">&lt;-</span> <span class="fu">order</span>(sim_vec, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
+<span id="cb127-6"><a href="#cb127-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb127-7"><a href="#cb127-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">query_asin =</span> data<span class="sc">$</span>asin[i],</span>
+<span id="cb127-8"><a href="#cb127-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">recommended_asin =</span> data<span class="sc">$</span>asin[train_idx[top_idx]],</span>
+<span id="cb127-9"><a href="#cb127-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">similarity =</span> sim_vec[top_idx]</span>
+<span id="cb127-10"><a href="#cb127-10" aria-hidden="true" tabindex="-1"></a>  ))</span>
+<span id="cb127-11"><a href="#cb127-11" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb127-12"><a href="#cb127-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb127-13"><a href="#cb127-13" aria-hidden="true" tabindex="-1"></a>recommendation_result <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, recommendations)</span>
+<span id="cb127-14"><a href="#cb127-14" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(recommendation_result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      query_asin recommended_asin similarity
+1151  B00006L9LC       B00006L9LC          1
+17677 B00006L9LC       B001OHV1H4          1
+3945  B00006L9LC       B00006L9LC          1
+11059 B00006L9LC       B001OHV1H4          1
+1134  B00006L9LC       B000URXP6E          1
+2552  B000URXP6E       B000FI4S1E          1
+945   B000URXP6E       B000URXP6E          1
+17010 B000URXP6E       B0010ZBORW          1
+18077 B000URXP6E       B00006L9LC          1
+2344  B000URXP6E       B000URXP6E          1
+9290  B0009RF9DW       B000URXP6E          1
+1252  B0009RF9DW       B0009RF9DW          1
+10289 B0009RF9DW       B0012Y0ZG2          1
+16740 B0009RF9DW       B0012Y0ZG2          1
+7700  B0009RF9DW       B00006L9LC          1</code></pre>
+</div>
+</div>
+</section>
+<section id="result-plot" class="level3">
+<h3 class="anchored" data-anchor-id="result-plot">Result Plot</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb129"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb129-1"><a href="#cb129-1" aria-hidden="true" tabindex="-1"></a>example_sim <span class="ot">&lt;-</span> similarity_matrix[query_indices[<span class="dv">1</span>], train_idx]</span>
+<span id="cb129-2"><a href="#cb129-2" aria-hidden="true" tabindex="-1"></a>example_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb129-3"><a href="#cb129-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">asin =</span> data<span class="sc">$</span>asin[train_idx],</span>
+<span id="cb129-4"><a href="#cb129-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">similarity =</span> example_sim</span>
+<span id="cb129-5"><a href="#cb129-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb129-6"><a href="#cb129-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(example_df, <span class="fu">aes</span>(<span class="at">x =</span> similarity)) <span class="sc">+</span></span>
+<span id="cb129-7"><a href="#cb129-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">30</span>, <span class="at">fill =</span> <span class="st">"steelblue"</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb129-8"><a href="#cb129-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Similarity Distribution for a Sample Product"</span>,</span>
+<span id="cb129-9"><a href="#cb129-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Cosine Similarity"</span>, <span class="at">y =</span> <span class="st">"Frequency"</span>) <span class="sc">+</span></span>
+<span id="cb129-10"><a href="#cb129-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="main_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="lr-derived-model" class="level2">
+<h2 class="anchored" data-anchor-id="lr-derived-model">LR Derived Model</h2>
+<p>Here we take the LR‐derived “negative‑sentiment” probability (prob_neg), append it to our existing item features, re‐scale everything, and rebuild the cosine‐similarity matrix. Then we perform a train/test split and, for a handful of held‑out (“query”) items, pull the top‑5 most similar training items as our recommendations.</p>
+<section id="predict-lrderived-probabilities" class="level3">
+<h3 class="anchored" data-anchor-id="predict-lrderived-probabilities">Predict LR‑Derived Probabilities</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb130"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb130-1"><a href="#cb130-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb130-2"><a href="#cb130-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb130-3"><a href="#cb130-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
+<span id="cb130-4"><a href="#cb130-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb130-5"><a href="#cb130-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(proxy)</span>
+<span id="cb130-6"><a href="#cb130-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
+<span id="cb130-7"><a href="#cb130-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict probabilities on the full dataset</span></span>
+<span id="cb130-8"><a href="#cb130-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb130-9"><a href="#cb130-9" aria-hidden="true" tabindex="-1"></a>prob_neg <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod, <span class="at">newdata =</span> dat_feat, <span class="at">type =</span> <span class="st">"response"</span>)</span>
+<span id="cb130-10"><a href="#cb130-10" aria-hidden="true" tabindex="-1"></a><span class="co">#    prob_neg[i] = P(overall&lt;4 | TF‑IDF of review i)</span></span>
+<span id="cb130-11"><a href="#cb130-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb130-12"><a href="#cb130-12" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>ID <span class="ot">&lt;-</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(data))</span>
+<span id="cb130-13"><a href="#cb130-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb130-14"><a href="#cb130-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Attach back to the original `data` frame by ID</span></span>
+<span id="cb130-15"><a href="#cb130-15" aria-hidden="true" tabindex="-1"></a>data_with_prob <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb130-16"><a href="#cb130-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prob_neg =</span> prob_neg[<span class="fu">match</span>(ID, dat_feat<span class="sc">$</span>ID)])</span>
+<span id="cb130-17"><a href="#cb130-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb130-18"><a href="#cb130-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb130-19"><a href="#cb130-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Feature Matrix &amp; Normalization</span></span>
+<span id="cb130-20"><a href="#cb130-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb130-21"><a href="#cb130-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Now rebuild the recommender features:</span></span>
+<span id="cb130-22"><a href="#cb130-22" aria-hidden="true" tabindex="-1"></a><span class="co">#    rating, sentiment_score, length_score, category_dummies, AND prob_neg</span></span>
+<span id="cb130-23"><a href="#cb130-23" aria-hidden="true" tabindex="-1"></a>feat2 <span class="ot">&lt;-</span> <span class="fu">cbind</span>(</span>
+<span id="cb130-24"><a href="#cb130-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">rating     =</span> data_with_prob<span class="sc">$</span>overall,</span>
+<span id="cb130-25"><a href="#cb130-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">sentiment  =</span> data_with_prob<span class="sc">$</span>sentiment_score,</span>
+<span id="cb130-26"><a href="#cb130-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">length     =</span> data_with_prob<span class="sc">$</span>length_score,</span>
+<span id="cb130-27"><a href="#cb130-27" aria-hidden="true" tabindex="-1"></a>  category_dummies,</span>
+<span id="cb130-28"><a href="#cb130-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">prob_neg   =</span> data_with_prob<span class="sc">$</span>prob_neg</span>
+<span id="cb130-29"><a href="#cb130-29" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb130-30"><a href="#cb130-30" aria-hidden="true" tabindex="-1"></a>feat2_norm <span class="ot">&lt;-</span> <span class="fu">scale</span>(feat2)</span>
+<span id="cb130-31"><a href="#cb130-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb130-32"><a href="#cb130-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb130-33"><a href="#cb130-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb130-34"><a href="#cb130-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Recompute cosine similarities </span></span>
+<span id="cb130-35"><a href="#cb130-35" aria-hidden="true" tabindex="-1"></a>sim2 <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">as.matrix</span>(<span class="fu">dist</span>(feat2_norm, <span class="at">method =</span> <span class="st">"cosine"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="traintest-split-1" class="level3">
+<h3 class="anchored" data-anchor-id="traintest-split-1">Train/Test Split</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb131"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb131-1"><a href="#cb131-1" aria-hidden="true" tabindex="-1"></a><span class="co"># (Re)create your train/test split if you haven’t already</span></span>
+<span id="cb131-2"><a href="#cb131-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb131-3"><a href="#cb131-3" aria-hidden="true" tabindex="-1"></a>n          <span class="ot">&lt;-</span> <span class="fu">nrow</span>(data_with_prob)</span>
+<span id="cb131-4"><a href="#cb131-4" aria-hidden="true" tabindex="-1"></a>train_idx  <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n, <span class="at">size =</span> <span class="fl">0.8</span> <span class="sc">*</span> n)</span>
+<span id="cb131-5"><a href="#cb131-5" aria-hidden="true" tabindex="-1"></a>test_idx   <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="dv">1</span><span class="sc">:</span>n, train_idx)</span>
+<span id="cb131-6"><a href="#cb131-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb131-7"><a href="#cb131-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Pick a few test items to “ask” for recommendations</span></span>
+<span id="cb131-8"><a href="#cb131-8" aria-hidden="true" tabindex="-1"></a>query_indices <span class="ot">&lt;-</span> <span class="fu">sample</span>(test_idx, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="generate-recommendation-1" class="level3">
+<h3 class="anchored" data-anchor-id="generate-recommendation-1">Generate Recommendation</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb132"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb132-1"><a href="#cb132-1" aria-hidden="true" tabindex="-1"></a><span class="co"># For each query, pull the top‑5 most similar train items</span></span>
+<span id="cb132-2"><a href="#cb132-2" aria-hidden="true" tabindex="-1"></a>recommendations2 <span class="ot">&lt;-</span> <span class="fu">lapply</span>(query_indices, <span class="cf">function</span>(i) {</span>
+<span id="cb132-3"><a href="#cb132-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># similarities from query i to all train items</span></span>
+<span id="cb132-4"><a href="#cb132-4" aria-hidden="true" tabindex="-1"></a>  sim_vec <span class="ot">&lt;-</span> sim2[i, train_idx]</span>
+<span id="cb132-5"><a href="#cb132-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb132-6"><a href="#cb132-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># find top‑5 (highest cosine similarity)</span></span>
+<span id="cb132-7"><a href="#cb132-7" aria-hidden="true" tabindex="-1"></a>  top5    <span class="ot">&lt;-</span> <span class="fu">order</span>(sim_vec, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
+<span id="cb132-8"><a href="#cb132-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb132-9"><a href="#cb132-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return a small data.frame</span></span>
+<span id="cb132-10"><a href="#cb132-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
+<span id="cb132-11"><a href="#cb132-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">query_asin        =</span> data_with_prob<span class="sc">$</span>asin[i],</span>
+<span id="cb132-12"><a href="#cb132-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">recommended_asin  =</span> data_with_prob<span class="sc">$</span>asin[train_idx[top5]],</span>
+<span id="cb132-13"><a href="#cb132-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">similarity        =</span> sim_vec[top5]</span>
+<span id="cb132-14"><a href="#cb132-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb132-15"><a href="#cb132-15" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb132-16"><a href="#cb132-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb132-17"><a href="#cb132-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine into one table</span></span>
+<span id="cb132-18"><a href="#cb132-18" aria-hidden="true" tabindex="-1"></a>recommendation_result2 <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, recommendations2)</span>
+<span id="cb132-19"><a href="#cb132-19" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(recommendation_result2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      query_asin recommended_asin similarity
+18182 B00006L9LC       B000URXP6E  1.0000000
+146   B00006L9LC       B001OHV1H4  0.9999999
+7973  B00006L9LC       B007V6JNE0  0.9999892
+6091  B00006L9LC       B000URXP6E  0.9999813
+11437 B00006L9LC       B0012Y0ZG2  0.9999724
+5219  B000URXP6E       B019FWRG3C  1.0000000
+18533 B000URXP6E       B000URXP6E  1.0000000
+18415 B000URXP6E       B00006L9LC  0.9999999
+19107 B000URXP6E       B0012Y0ZG2  0.9999997
+5817  B000URXP6E       B00W259T7G  0.9999992
+17584 B0009RF9DW       B001OHV1H4  1.0000000
+1314  B0009RF9DW       B0013NB7DW  1.0000000
+17175 B0009RF9DW       B000URXP6E  1.0000000
+8083  B0009RF9DW       B0012Y0ZG2  1.0000000
+16201 B0009RF9DW       B019809F9Y  1.0000000</code></pre>
+</div>
+</div>
+</section>
+<section id="result-plot-1" class="level3">
+<h3 class="anchored" data-anchor-id="result-plot-1">Result Plot</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb134"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb134-1"><a href="#cb134-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Re‐create example_df for sim2</span></span>
+<span id="cb134-2"><a href="#cb134-2" aria-hidden="true" tabindex="-1"></a>example_sim <span class="ot">&lt;-</span> sim2[ query_indices[<span class="dv">1</span>], train_idx ]</span>
+<span id="cb134-3"><a href="#cb134-3" aria-hidden="true" tabindex="-1"></a>example_df  <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb134-4"><a href="#cb134-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">asin       =</span> data_with_prob<span class="sc">$</span>asin[ train_idx ],</span>
+<span id="cb134-5"><a href="#cb134-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">similarity =</span> example_sim</span>
+<span id="cb134-6"><a href="#cb134-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb134-7"><a href="#cb134-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb134-8"><a href="#cb134-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Build the plot</span></span>
+<span id="cb134-9"><a href="#cb134-9" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(example_df, <span class="fu">aes</span>(<span class="at">x =</span> similarity)) <span class="sc">+</span></span>
+<span id="cb134-10"><a href="#cb134-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">30</span>, <span class="at">fill =</span> <span class="st">"steelblue"</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb134-11"><a href="#cb134-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb134-12"><a href="#cb134-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Similarity Distribution for a Sample Product"</span>,</span>
+<span id="cb134-13"><a href="#cb134-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">x     =</span> <span class="st">"Cosine Similarity"</span>,</span>
+<span id="cb134-14"><a href="#cb134-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">y     =</span> <span class="st">"Frequency"</span></span>
+<span id="cb134-15"><a href="#cb134-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb134-16"><a href="#cb134-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb134-17"><a href="#cb134-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb134-18"><a href="#cb134-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Print it (necessary if you’re in a script or function)</span></span>
+<span id="cb134-19"><a href="#cb134-19" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="main_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="evaluation-2" class="level2">
+<h2 class="anchored" data-anchor-id="evaluation-2">Evaluation</h2>
+<p>The first histogram is our baseline content‑based recommender (rating + sentiment + length + category only), and the second histogram is the enhanced recommender after we injected our logistic‑regression probability feature.</p>
+<p>Plot 1</p>
+<ul>
+<li>(baseline) shows almost all similarities clustered in the negative/near‑zero region, with only a tiny spike up near +1.0.</li>
+</ul>
+<p>Plot 2</p>
+<ul>
+<li>(with our prob_neg feature) has a visibly fatter right‑hand tail (more items in the +0.2 to +1.0 range), meaning more candidates are judged “similar.”</li>
+</ul>
+<p>Since a richer positive tail generally translates to more—and potentially better—recommendation candidates, Plot 2 (the second one) demonstrates the improved recommender.</p>
 </section>
 </section>
 

@@ -5,6 +5,9 @@ format:
     toc: true
     theme: cosmo
     sidebar: true
+executes:
+  warning: false
+  cache: true
 ---
 
 # Overview
@@ -99,7 +102,8 @@ Each CSV file contains the following columns:
 
 These data have been reduced to extract the [k-core](https://en.wikipedia.org/wiki/Degeneracy_(graph_theory)), such that each of the remaining users and items have k reviews each. This shrinks the size of the dataset to fit the purpose of this project. We then resample data (max 10,000 per category) to further reduce the data size to make it workable.
 
-```{r, eval=FALSE}
+```{r}
+#| eval: false
 # Warning! Do not run this code block if you already have Amazon_Reviews_Processed.csv file in your directory.
 
 library(data.table) # Used for fast data loading and manipulation.
@@ -522,7 +526,7 @@ head(df[, c("reviewText", "cleaned_text")], 2)
 **Stratified sampling by sentiment and review length** to ensure your train/validation/test splits maintain balanced proportions
 
 ```{r}
-#| echo: true
+#| eval: false
 library(data.table)
 library(dplyr)
 library(ggplot2)
@@ -622,7 +626,7 @@ ggplot(dist_df, aes(x = Split, y = Proportion, fill = Length)) +
 ### Applying Sentiment Scoring
 
 ```{r}
-#| echo: true
+#| eval: false
 # --- Install if needed ---
 library(pbapply)
 library(syuzhet)
@@ -827,7 +831,7 @@ Values:\
 
 The result is solid for a first pass, but there’s still head‑room before you hit “excellent.”
 
-# Model Comaprison
+## Model Comaprison
 
 ```{r}
 library(caret)
@@ -1008,6 +1012,12 @@ Here we take the LR‐derived “negative‑sentiment” probability (prob_neg),
 ### Predict LR‑Derived Probabilities
 
 ```{r}
+library(data.table)
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(proxy)
+library(scales)
 # Predict probabilities on the full dataset
 
 prob_neg <- predict(mod, newdata = dat_feat, type = "response")
@@ -1018,11 +1028,10 @@ data$ID <- seq_len(nrow(data))
 # Attach back to the original `data` frame by ID
 data_with_prob <- data %>%
   mutate(prob_neg = prob_neg[match(ID, dat_feat$ID)])
-```
 
-### Feature Matrix & Normalization
 
-```{r}
+# Feature Matrix & Normalization
+
 # Now rebuild the recommender features:
 #    rating, sentiment_score, length_score, category_dummies, AND prob_neg
 feat2 <- cbind(
@@ -1034,14 +1043,16 @@ feat2 <- cbind(
 )
 feat2_norm <- scale(feat2)
 
-# Recompute cosine similarities and recommendations 
+
+
+# Recompute cosine similarities 
 sim2 <- 1 - as.matrix(dist(feat2_norm, method = "cosine"))
 ```
 
 ### Train/Test Split
 
 ```{r}
-{# (Re)create your train/test split if you haven’t already}
+# (Re)create your train/test split if you haven’t already
 set.seed(42)
 n          <- nrow(data_with_prob)
 train_idx  <- sample(1:n, size = 0.8 * n)
