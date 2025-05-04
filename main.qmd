@@ -1,5 +1,5 @@
 ---
-title: "Amazon Sentiment Analysis"
+title: "Product Sentiment Analysis & Recommender System"
 format: 
   html:
     toc: true
