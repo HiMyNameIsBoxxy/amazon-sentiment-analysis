@@ -305,153 +305,520 @@ The **category distribution** shows that some categories, like **Books (630,000 
 
 -   It helps in making **business and research decisions**, such as identifying which product types receive more customer engagement.
 
-# Building A Classification Model
+### **Histograms for review lengths and overall scores**
+
+```{r}
+
+library(ggplot2)
+library(data.table)
+library(dplyr)
+
+df <- fread("Amazon_Reviews_Processed.csv")
+
+df <- df %>%
+  mutate(review_length = nchar(reviewText))
+
+# --- Plot histograms side by side ---
+library(gridExtra)
+
+p1 <- ggplot(df, aes(x = review_length)) +
+  geom_histogram(bins = 50, fill = "#69b3a2", color = "black") +
+  ggtitle("Distribution of Review Lengths") +
+  xlab("Review Length") +
+  ylab("Count") +
+  theme_minimal()
+
+p2 <- ggplot(df, aes(x = overall)) +
+  geom_histogram(binwidth = 1, fill = "#ff9999", color = "black") +
+  ggtitle("Distribution of Overall Scores") +
+  xlab("Overall Rating") +
+  ylab("Count") +
+  theme_minimal()
+
+# --- Display plots ---
+grid.arrange(p1, p2, ncol = 2)
+
+```
+
+## Additional Charts
+
+### **Box plots for review lengths by sentiment**
+
+```{r}
+library(data.table)
+library(dplyr)
+library(ggplot2)
+
+
+df <- fread("Amazon_Reviews_Processed.csv")
+
+# --- Add review length column ---
+df <- df %>%
+  mutate(review_length = nchar(reviewText))
+
+# --- Plot box plot ---
+ggplot(df, aes(x = sentiment, y = review_length)) +
+  geom_boxplot(fill = "#99c2ff", color = "black") +
+  ggtitle("Box Plot of Review Lengths by Sentiment") +
+  xlab("Sentiment") +
+  ylab("Review Length") +
+  theme_minimal()
+
+```
+
+### **Bar plots for sentiment distribution across categories**
+
+```{r}
+library(data.table)
+library(dplyr)
+library(ggplot2)
+
+df <- fread("Amazon_Reviews_Processed.csv")
+
+# --- Count sentiment per category ---
+sentiment_category <- df %>%
+  group_by(category, sentiment) %>%
+  summarise(count = n(), .groups = "drop")
+
+# --- Plot stacked bar chart ---
+ggplot(sentiment_category, aes(x = category, y = count, fill = sentiment)) +
+  geom_bar(stat = "identity") +
+  ggtitle("Sentiment Distribution Across Categories") +
+  xlab("Category") +
+  ylab("Number of Reviews") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_brewer(palette = "Set2", name = "Sentiment")
+
+```
+
+### **Word Cloud**
+
+```{r}
+# --- Load Required Libraries ---
+library(data.table)
+library(dplyr)
+library(tm)
+library(wordcloud)
+library(RColorBrewer)
+
+# --- Load Your Data ---
+df <- fread("Amazon_Reviews_Processed.csv")
+
+# --- Fill NA summaries ---
+df$summary[is.na(df$summary)] <- ""
+
+# --- Sample 10,000 per sentiment (or fewer if not available) ---
+set.seed(123)
+df_sampled <- df %>%
+  group_by(sentiment) %>%
+  sample_n(size = min(10000, n()), replace = FALSE) %>%
+  ungroup()
+
+# --- Function to Clean and Extract Word Frequencies ---
+get_term_freq <- function(text_vector) {
+  corpus <- Corpus(VectorSource(text_vector))
+  corpus <- corpus %>%
+    tm_map(content_transformer(tolower)) %>%
+    tm_map(removePunctuation) %>%
+    tm_map(removeNumbers) %>%
+    tm_map(removeWords, stopwords("en")) %>%
+    tm_map(stripWhitespace)
+  
+  dtm <- TermDocumentMatrix(corpus, control = list(wordLengths = c(3, Inf)))
+  m <- as.matrix(dtm)
+  word_freqs <- sort(rowSums(m), decreasing = TRUE)
+  return(word_freqs)
+}
+
+# --- Generate Word Frequencies for Each Sentiment ---
+pos_words <- get_term_freq(df_sampled %>% filter(sentiment == "positive") %>% pull(summary))
+neu_words <- get_term_freq(df_sampled %>% filter(sentiment == "neutral") %>% pull(summary))
+neg_words <- get_term_freq(df_sampled %>% filter(sentiment == "negative") %>% pull(summary))
+
+# --- Plot Word Clouds Side by Side ---
+par(mfrow = c(1, 3), mar = c(0, 0, 2, 0))
+
+wordcloud(names(pos_words), pos_words, max.words = 100,
+          scale = c(3, 0.5), colors = brewer.pal(8, "Dark2"))
+title("Positive Reviews Word Cloud")
+
+wordcloud(names(neu_words), neu_words, max.words = 100,
+          scale = c(3, 0.5), colors = brewer.pal(8, "Dark2"))
+title("Neutral Reviews Word Cloud")
+
+wordcloud(names(neg_words), neg_words, max.words = 100,
+          scale = c(3, 0.5), colors = brewer.pal(8, "Dark2"))
+title("Negative Reviews Word Cloud")
+
+
+
+```
+
+# Data Preparation
+
+## Text Processing
+
+-   Lowercases text
+
+-   Tokenizes it
+
+-   Removes stopwords but preserves negations (e.g., “not”, “don’t”)
+
+-   Removes punctuation
+
+-   Collapses extra whitespace
+
+```{r}
+# --- Load required libraries ---
+library(tm)
+library(stringr)
+library(tokenizers)
+
+# --- Define stop words and negation stop words ---
+standard_stopwords <- stopwords("en")
+
+neg_stop_words <- c(
+  "no", "nor", "not", "don't", "doesn't", "hadn't", "hasn't", "haven't",
+  "isn't", "mightn't", "mustn't", "needn't", "shan't", "shouldn't",
+  "wasn't", "weren't", "won't", "wouldn't"
+)
+
+# --- Custom stopword list: remove negations from stopwords ---
+custom_stopwords <- setdiff(standard_stopwords, neg_stop_words)
+
+# --- Preprocess function ---
+preprocess_text <- function(text, stop_words = custom_stopwords, neg_words = neg_stop_words) {
+  # Convert to lowercase
+  text <- tolower(text)
+  
+  # Tokenize
+  tokens <- unlist(tokenize_words(text))
+  
+  # Remove stop words except negations
+  filtered_tokens <- tokens[!(tokens %in% stop_words) | tokens %in% neg_words]
+  
+  # Remove punctuation
+  filtered_tokens <- gsub("[[:punct:]]", "", filtered_tokens)
+  
+  # Remove empty strings and extra whitespace
+  filtered_tokens <- filtered_tokens[filtered_tokens != ""]
+  
+  # Rejoin tokens
+  cleaned_text <- str_trim(paste(filtered_tokens, collapse = " "))
+  return(cleaned_text)
+}
+
+# Apply the preprocessing function to the text
+df$cleaned_text <- sapply(df$reviewText, preprocess_text)
+
+# View original vs cleaned text side by side (first 2 rows)
+head(df[, c("reviewText", "cleaned_text")], 2)
+
+```
+
+## Encoding & Tokenizing
+
+**Stratified sampling by sentiment and review length** to ensure your train/validation/test splits maintain balanced proportions
+
+```{r}
+#| echo: true
+library(data.table)
+library(dplyr)
+library(ggplot2)
+library(caret)
+library(pbapply) #For progress bar
+
+# --- Clean dataset ---
+df <- fread("Amazon_Reviews_Processed.csv")
+
+# Apply custom function "preprocess_text
+df$cleaned_text <- pbapply::pbsapply(df$reviewText, preprocess_text)
+df$cleaned_length <- nchar(df$cleaned_text)
+
+fwrite(df, "Amazon_Reviews_Cleaned.csv")
+
+# This chunk takes about 10 minutes to run. We will skip this in rendering.
+```
+
+```{r}
+library(data.table)
+library(dplyr)
+library(ggplot2)
+library(caret)
+library(pbapply)
+
+# --- Load cleaned dataset ---
+df <- fread("Amazon_Reviews_Cleaned.csv")
+
+# --- Bin review length ---
+df <- df %>%
+  mutate(
+    length_bin = cut(cleaned_length, 
+                     breaks = c(0, 128, 256, Inf), 
+                     labels = c("short", "medium", "long")),
+    stratify_col = paste(sentiment, length_bin, sep = "_")
+  ) %>%
+  filter(!is.na(stratify_col))
+
+# --- Stratified splitting using caret::createDataPartition ---
+set.seed(123)
+
+# 1. Split off training set
+train_idx <- createDataPartition(df$stratify_col, p = 0.8, list = FALSE)
+train_df <- df[train_idx, ]
+temp_df <- df[-train_idx, ]
+
+# 2. Now split validation and test (50-50 from remaining 20%)
+val_idx <- createDataPartition(temp_df$stratify_col, p = 0.5, list = FALSE)
+val_df <- temp_df[val_idx, ]
+test_df <- temp_df[-val_idx, ]
+
+```
+
+### Distribution Check
+
+```{r}
+# Function to compute proportion tables
+get_distribution <- function(data) {
+  list(
+    sentiment = prop.table(table(data$sentiment)),
+    length_bin = prop.table(table(data$length_bin)),
+    n = nrow(data)
+  )
+}
+
+train_dist <- get_distribution(train_df)
+val_dist <- get_distribution(val_df)
+test_dist <- get_distribution(test_df)
+
+```
+
+### Bar Plotting of Distributions
+
+```{r}
+# Convert to data.frame for plotting
+dist_df <- data.frame(
+  Split = rep(c("Train", "Val", "Test"), each = 3),
+  Length = rep(c("short", "medium", "long"), times = 3),
+  Proportion = c(train_dist$length_bin, val_dist$length_bin, test_dist$length_bin)
+)
+
+ggplot(dist_df, aes(x = Split, y = Proportion, fill = Length)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  ggtitle("Review Length Bin Distribution by Dataset Split") +
+  theme_minimal()
+
+```
+
+# Building Classification Models
+
+## Syuzhet (Rule Based)
+
+1.  Syuzhet is a rule-based sentiment analysis tool designed to extract emotional and narrative structures from text, originally developed for literary and long-form content.
+
+2.  It uses a Bag of Words approach and computes sentiment by matching individual words in the text to a predefined sentiment lexicon (e.g., positive or negative words) and summing their scores to produce an overall sentiment score.
+
+### Applying Sentiment Scoring
+
+```{r}
+#| echo: true
+# --- Install if needed ---
+library(pbapply)
+library(syuzhet)
+
+# --- Make sure text is character ---
+df$cleaned_text <- as.character(df$cleaned_text)
+
+# --- Syuzhet Sentiment with Progress Bar ---
+df$syuzhet_score <- pbapply::pbsapply(df$cleaned_text, get_sentiment, method = "syuzhet")
+
+# Save to CSV
+fwrite(df, "Amazon_Reviews_Syuzhet_Sentiment.csv")
+```
+
+### Evaluation
+
+```{r}
+# Read the CSV file you previously saved
+df <- fread("Amazon_Reviews_Syuzhet_Sentiment.csv")
+
+df$syuzhet_sentiment <- ifelse(df$syuzhet_score >= 0.05, "positive",
+                         ifelse(df$syuzhet_score <= -0.05, "negative", "neutral"))
+
+library(caret)
+
+# Convert to factors for classification report
+truth <- as.factor(df$sentiment)
+pred  <- as.factor(df$syuzhet_sentiment)
+
+# Generate confusion matrix
+cm_syuzhet <- confusionMatrix(as.factor(pred), truth)
+
+cm_syuzhet
+```
+
+The Syuzhet-based sentiment classification model achieved an overall accuracy of 82.78%, which initially appears strong. However, this result is largely driven by the dataset's class imbalance, where over 93% of reviews are positive. This is reflected in the No Information Rate (NIR) of 93.27%, indicating that a naive model predicting only "positive" would outperform Syuzhet in raw accuracy. The Kappa statistic of 0.1362 confirms poor agreement between predicted and true labels beyond chance. While Syuzhet performs well in identifying positive reviews (with precision of 95% and recall of 87%), its performance significantly degrades for neutral and negative reviews. Specifically, it captures only 11.9% of true neutral reviews and 37.3% of true negative reviews, with low precision for both classes. These results suggest that while Syuzhet is useful for flagging clearly positive content, it struggles with more nuanced sentiment, and is not well-suited for imbalanced datasets without additional modeling or correction strategies.
+
+## Logistic Regression (ML)
 
 We would like to see whether a review is likely to result in a high (4-5 stars) or low (1-2 stars) rating using logistic regression based on textual features.
 
-### Setup & Data Ingestion
+### Word Frequency Analysis
 
 ```{r}
-# text mining
 library(tidytext)
 library(textdata)
 library(dplyr)
 library(ggplot2)
+library(caret)
+library(pROC)
+library(tidyr)
+library(data.table)
 
-dat<-read.csv('Amazon_Reviews_Processed.csv')
+# train_df from text processing
 
-dat<-dat%>%mutate(ID=1:nrow(dat))
-```
+train_df <- train_df %>% mutate(ID = 1:nrow(train_df))
 
-### Tokenization & Compute TF-IDF
-
-```{r}
-temp<-dat%>%
-  # splits each reviewText into lowercase tokens
-  unnest_tokens(output = word, input = reviewText)%>%
-  
-  # keeps only tokens that Bing’s lexicon classifies as positive or negative
-  inner_join(get_sentiments('bing'))%>%
-  
-  # collapses duplicate tokens inside each review and stores how often they appear (n
-  count(ID, word)%>%
-  
+temp <- train_df %>%
+  select(ID, cleaned_text) %>%
+  rename(reviewText = cleaned_text) %>%
+  unnest_tokens(output = word, input = reviewText) %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(ID, word) %>%
   bind_tf_idf(word, ID, n)
 
-```
+# Add Overall Ratings Back
+temp <- temp %>% left_join(train_df %>% select(ID, overall))
 
-tf – term frequency in a review
-
-idf – inverse‑document frequency across all reviews
-
-tf_idf – their product, which emphasises words that are common within a review but rare across reviews.
-
-### Bring in the star rating (overall sentiment label)
-
-```{r}
-temp<-temp%>%left_join(dat%>%select(ID,overall))
-```
-
-After the join each token row now knows the review’s star rating (overall). This lets you test whether certain words predict higher or lower ratings later.
-
-### How many unique words explain most of the corpus?
-
-```{r}
-# words with high frequency
-temp%>%group_by(word)%>%
-  summarise(counts=sum(n))%>%
-  arrange(-counts)%>%
-  mutate(Proportion=cumsum(counts)/nrow(temp),
-         freq_rank=1:4547)%>%
-  ggplot(aes(freq_rank,Proportion))+geom_line()+
-  geom_hline(yintercept = 0.8,linetype=2,colour='red')+
-  geom_vline(xintercept =60,linetype=2,colour='red')
-```
-
-### Display the 60 most frequent sentiment‑bearing word
-
-```{r}
-# 60 words with highest frequency would capture more than 80% words counts
-temp%>%group_by(word)%>%
-  summarise(counts=sum(n))%>%
-  mutate(word=reorder(word,counts))%>%arrange(-counts)%>%head(60)%>%
-  ggplot(aes(y=word,x=counts))+geom_bar(stat = 'identity')
+temp %>% group_by(word) %>%
+  summarise(counts = sum(n)) %>%
+  arrange(-counts) %>%
+  mutate(Proportion = cumsum(counts)/sum(counts), freq_rank = row_number()) %>%
+  ggplot(aes(freq_rank, Proportion)) +
+  geom_line() +
+  geom_hline(yintercept = 0.8, linetype = 2, colour = 'red') +
+  geom_vline(xintercept = 60, linetype = 2, colour = 'red')
 
 ```
 
-### Feature Selection (Dimension Reduction)
+**Interpretation**
+
+-   X-axis (freq_rank): The rank of words by frequency (1 = most frequent, 2 = next most frequent, etc.)
+
+-   Y-axis (Proportion): Cumulative proportion of all word occurrences covered up to that rank
+
+-   The horizontal line at \~0.80 means you're marking where 80% of all word occurrences are reached
+
+-   The vertical line shows the number of unique words needed to reach that 80% coverage — in this case, around 150–200 words
+
+Small vocabulary covers most usage: \~200 most frequent sentiment words cover 80% of all word occurrences. Feature selection opportunity: You can safely reduce your feature space (e.g., TF-IDF features) to just the top 200–300 words without losing much information. Zipf's Law in action: This distribution is consistent with Zipf's Law — few words are used very frequently, and many are rare
+
+### Bar Plot of Top 60 Frequent Words
 
 ```{r}
-# features
-words<-temp%>%
-  group_by(word)%>%
-  summarise(counts=sum(n))%>%
-  mutate(word=reorder(word,counts))%>%
-  arrange(-counts)%>%
-  head(60)
-
-words<-as.character(words$word)
+temp %>% group_by(word) %>%
+  summarise(counts = sum(n)) %>%
+  mutate(word = reorder(word, counts)) %>%
+  arrange(-counts) %>%
+  head(60) %>%
+  ggplot(aes(y = word, x = counts)) +
+  geom_bar(stat = 'identity')
 ```
 
-We limit the feature space so the model doesn’t explode in dimensionality (60 columns instead of thousands)
-
-### Converting the tidy tokens into a document‑term matrix
+### Fitting Logistic Regression Model
 
 ```{r}
-temp2<-temp%>%filter(word%in%words)
+# Select Top 60 Words as Features (Dimension Reduction)
+words <- temp %>%
+  group_by(word) %>%
+  summarise(counts = sum(n)) %>%
+  arrange(-counts) %>%
+  head(60) %>%
+  pull(word)
 
-# rows　= reviews, cols　= words, value　= idf
-dat_feat<-temp2%>%
-  cast_dtm(ID, word, idf)%>%
+# We limit the feature space so the model doesn’t explode in dimensionality (60 columns instead of thousands)
+
+temp2 <- temp %>% filter(word %in% words)
+
+dat_feat <- temp2 %>%
+  cast_dtm(ID, word, tf_idf) %>%
   as.matrix()
 
-# bring back the star rating
-dat_feat<-dat%>%
-  select(ID,overall)%>%
-  left_join(data.frame(ID=as.numeric(rownames(dat_feat)),dat_feat))
+# Merge with overall rating for logistic regression
+dat_feat <- train_df %>%
+  select(ID, overall) %>%
+  left_join(data.frame(ID = as.numeric(rownames(dat_feat)), dat_feat))
 
-# words that don’t appear in a review → 0
-dat_feat[is.na(dat_feat)]<-0
+dat_feat[is.na(dat_feat)] <- 0
 
-```
 
-### Fit a logistic regression and visualise word effects
-
-```{r}
-# logistic regression model
-
-# Binary target: 1 if rating < 4 stars (negativeish), 0 otherwise.
-mod<-glm(I(overall<4)~.-ID-overall,data=dat_feat,family=binomial())
-
+# Logistic regression model
+mod <- glm(I(overall < 4) ~ . - ID - overall, data = dat_feat, family = binomial())
 summary(mod)
 
-# drop the intercept
-coef<-coef(mod)[-1]
-
-data.frame(coef,words=names(coef))%>%
-  ggplot(aes(x=coef,y=reorder(words,abs(coef))))+
-  geom_bar(stat='identity')+
-  labs(x='log(OR) of low rating',y='keywords')
 ```
 
-## Model Evaluation
+The logistic regression model effectively predicts low-rated reviews using sentiment-bearing keywords. Most coefficients are strongly negative and statistically significant, indicating that words like “great,” “perfect,” and “excellent” are highly associated with high ratings. The model substantially reduces deviance from the null model and has a low AIC, suggesting a good overall fit. This confirms that positive language in reviews strongly decreases the likelihood of receiving a low rating.
 
 ```{r}
-# model evaluation
+# Visualize Model Coefficients
+coef <- coef(mod)[-1]
+data.frame(coef, words = names(coef)) %>%
+  ggplot(aes(x = coef, y = reorder(words, abs(coef)))) +
+  geom_bar(stat = 'identity') +
+  labs(x = 'log(OR) of low rating', y = 'keywords')
+```
+
+**Words strongly associated with high ratings:**
+
+-   Words like “great”, “perfect”, “excellent”, “awesome”, “pleasant” have strong negative log(OR) values.
+
+```         
+-   These words decrease the likelihood of a review being rated low.
+
+-   Their appearance makes a review more likely to be positive.
+```
+
+**Words associated with low ratings:**
+
+-   Words like “disappointed”, “issue”, “problem”, “returned”, “expensive” have positive log(OR) values.
+
+    -   Their presence increases the likelihood that a review is negative.
+
+**Neutral or ambiguous words:**
+
+-   Words near 0 (e.g., “recommend”, “value”, “product”) are less discriminative.
+
+    -   These might appear in both high and low ratings depending on context.
+
+### Evaluation
+
+```{r}
+library(pROC)
+
 # confusion matrix
 pred<-ifelse(predict(mod)>0,'low','high')
 
 real<-ifelse(dat_feat$overall<4,'low','high')
 
-caret::confusionMatrix(as.factor(pred),as.factor(real))
+cm_lr <- confusionMatrix(as.factor(pred),as.factor(real))
 
-library(pROC)
+cm_lr
+
+```
+
+```{r}
 roc1<-roc(real~predict(mod))
+
 plot(roc1,print.auc=TRUE)
+```
+
+```{r}
 auc(roc1)
 ```
 
-0.83 ⇒ **83 % of the time** it orders the pair correctly. \
+0.83 ⇒ **83 % of the time** it orders the pair correctly.\
 Values:\
 • \> 0.90 = excellent\
 • 0.80–0.90 = good\
@@ -459,3 +826,548 @@ Values:\
 • 0.50–0.70 = weak
 
 The result is solid for a first pass, but there’s still head‑room before you hit “excellent.”
+
+# Model Comaprison
+
+```{r}
+library(caret)
+
+
+# Extract the overall Accuracy and Kappa:
+stats_lr <- cm_lr$overall[c("Accuracy", "Kappa")]
+stats_syz <- cm_syuzhet$overall[c("Accuracy", "Kappa")]
+
+# Build a comparison table
+comparison_df <- data.frame(
+  Model    = c("Logistic Regression", "Syuzhet"),
+  Accuracy = c(stats_lr["Accuracy"], stats_syz["Accuracy"]),
+  Kappa    = c(stats_lr["Kappa"],    stats_syz["Kappa"]),
+  row.names = NULL,
+  stringsAsFactors = FALSE
+)
+
+print(comparison_df)
+
+
+
+```
+
+Accuracy
+
+-   Logistic Regression: 85.21%
+
+-   Syuzhet lexicon: 82.78%
+
+Cohen’s Kappa (agreement beyond random chance)
+
+-   Logistic Regression: 0.0006 (almost zero!)
+
+-   Syuzhet: 0.1362 (a small but non-negligible agreement)
+
+    A Kappa near 0 means that—even though LR’s raw accuracy is higher—it’s basically doing no better than random (given class imbalance). Syuzhet actually shows slight real agreement beyond chance.
+
+**Bottom line**: Logistic regression “looks” better by accuracy, but Kappa and baseline comparison reveal it isn’t really learning beyond the dominant class. Focusing on balanced metrics, handling imbalance, and enriching features may give us a much clearer picture of true predictive power.
+
+# Building Recommender
+
+## Baseline Model
+```{r}
+library(data.table)
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(proxy)
+library(scales)
+
+data <- fread("Amazon_Reviews_Processed.csv", nrows = 20000)
+
+data$sentiment_score <- ifelse(data$sentiment == "positive", 1,
+                          ifelse(data$sentiment == "neutral", 0.5, 0))
+
+data$category <- as.factor(data$category)
+if (nlevels(data$category) > 1) {
+  category_dummies <- model.matrix(~ category - 1, data = data)
+} else {
+  category_dummies <- NULL
+}
+
+data$length_score <- as.numeric(as.factor(data$length))
+
+if (!is.null(category_dummies)) {
+  features <- cbind(
+    rating = data$overall,
+    sentiment = data$sentiment_score,
+    length = data$length_score,
+    category_dummies
+  )
+} else {
+  features <- cbind(
+    rating = data$overall,
+    sentiment = data$sentiment_score,
+    length = data$length_score
+  )
+}
+
+features_norm <- scale(features)
+
+#Define Similarity Metric
+similarity_matrix <- 1 - as.matrix(dist(features_norm, method = "cosine"))
+
+#Create a Train/Test Split
+set.seed(42)
+n <- nrow(data)
+train_idx <- sample(1:n, size = 0.8 * n)
+test_idx <- setdiff(1:n, train_idx)
+
+query_indices <- sample(test_idx, 3)
+recommendations <- lapply(query_indices, function(i) {
+  sim_vec <- similarity_matrix[i, train_idx]
+  top_idx <- order(sim_vec, decreasing = TRUE)[1:5]
+  return(data.frame(
+    query_asin = data$asin[i],
+    recommended_asin = data$asin[train_idx[top_idx]],
+    similarity = sim_vec[top_idx]
+  ))
+})
+
+recommendation_result <- do.call(rbind, recommendations)
+print(recommendation_result)
+```
+
+### Plot
+```{r}
+example_sim <- similarity_matrix[query_indices[1], train_idx]
+example_df <- data.frame(
+  asin = data$asin[train_idx],
+  similarity = example_sim
+)
+ggplot(example_df, aes(x = similarity)) +
+  geom_histogram(bins = 30, fill = "steelblue", color = "white") +
+  labs(title = "Similarity Distribution for a Sample Product",
+       x = "Cosine Similarity", y = "Frequency") +
+  theme_minimal()
+```
+
+
+## LR Derived Model
+
+Here we take the LR‐derived “negative‑sentiment” probability (prob_neg), append it to our existing item features, re‐scale everything, and rebuild the cosine‐similarity matrix. Then we perform a train/test split and, for a handful of held‑out (“query”) items, pull the top‑5 most similar training items as our recommendations.
+```{r}
+# 1. Predict probabilities on your full dataset
+#    (or just on your train + test split, whichever you’ll compare)
+prob_neg <- predict(mod, newdata = dat_feat, type = "response")
+#    prob_neg[i] = P(overall<4 | TF‑IDF of review i)
+
+data$ID <- seq_len(nrow(data))
+
+# 2. Attach back to your original `data` frame by ID
+data_with_prob <- data %>%
+  mutate(prob_neg = prob_neg[match(ID, dat_feat$ID)]) 
+
+# 3. Now rebuild your recommender features:
+#    rating, sentiment_score, length_score, category_dummies, AND prob_neg
+feat2 <- cbind(
+  rating     = data_with_prob$overall,
+  sentiment  = data_with_prob$sentiment_score,
+  length     = data_with_prob$length_score,
+  category_dummies,
+  prob_neg   = data_with_prob$prob_neg
+)
+feat2_norm <- scale(feat2)
+
+# 4. Recompute cosine similarities and recommendations as before
+sim2 <- 1 - as.matrix(dist(feat2_norm, method = "cosine"))
+
+```
+
+```{r}
+# (Re)create your train/test split if you haven’t already
+set.seed(42)
+n          <- nrow(data_with_prob)
+train_idx  <- sample(1:n, size = 0.8 * n)
+test_idx   <- setdiff(1:n, train_idx)
+
+# Pick a few test items to “ask” for recommendations
+query_indices <- sample(test_idx, 3)
+
+# For each query, pull the top‑5 most similar train items
+recommendations2 <- lapply(query_indices, function(i) {
+  # similarities from query i to all train items
+  sim_vec <- sim2[i, train_idx]
+  
+  # find top‑5 (highest cosine similarity)
+  top5    <- order(sim_vec, decreasing = TRUE)[1:5]
+  
+  # return a small data.frame
+  data.frame(
+    query_asin        = data_with_prob$asin[i],
+    recommended_asin  = data_with_prob$asin[train_idx[top5]],
+    similarity        = sim_vec[top5]
+  )
+})
+
+# Combine into one table
+recommendation_result2 <- do.call(rbind, recommendations2)
+print(recommendation_result2)
+```
+
+
+### Plot
+```{r}
+# 1. Re‐create example_df for sim2
+example_sim <- sim2[ query_indices[1], train_idx ]
+example_df  <- data.frame(
+  asin       = data_with_prob$asin[ train_idx ],
+  similarity = example_sim
+)
+
+# 2. Build the plot
+p <- ggplot(example_df, aes(x = similarity)) +
+  geom_histogram(bins = 30, fill = "steelblue", color = "white") +
+  labs(
+    title = "Similarity Distribution for a Sample Product",
+    x     = "Cosine Similarity",
+    y     = "Frequency"
+  ) +
+  theme_minimal()
+
+# 3. Print it (necessary if you’re in a script or function)
+print(p)
+```
+
+## Evaluation
+The first histogram is our baseline content‑based recommender (rating + sentiment + length + category only), and the second histogram is the enhanced recommender after we injected our logistic‑regression probability feature.
+
+
+Plot 1 (baseline) shows almost all similarities clustered in the negative/near‑zero region, with only a tiny spike up near +1.0.
+
+Plot 2 (with our prob_neg feature) has a visibly fatter right‑hand tail (more items in the +0.2 to +1.0 range), meaning more candidates are judged “similar.”
+
+Since a richer positive tail generally translates to more—and potentially better—recommendation candidates, Plot 2 (the second one) demonstrates the improved recommender.
+
+
+# EVERYTHING BELOW THIS WONT BE ON THE FINAL HTML. THOSE ARE STILL UNDER TESTING
+
+------------------------------------------------------------------------
+
+## Deep Learning
+
+For classical text‐based models (like Logistic Regression), we wanted to strip out punctuation, drop stop words (except negations), lowercase everything, etc., because we were turning text into “bags of words” or TF‐IDF vectors.
+
+With a transformer‐based model like DistilBERT, however, we do not want to throw away punctuation, remove stop words, or pre‐tokenize yourself. Instead we feed it the raw or lightly cleaned text and let its own subword tokenizer:
+
+Preserve punctuation and special tokens that carry meaning (e.g. negation, contractions, emojis).
+
+Learn word pieces (e.g. “walking” → “walk” + “##ing”) so we don’t have to manually handle every morphological variant.
+
+### Preparing Data
+
+```{r}
+#| echo: true
+library(dplyr)
+library(stringr)
+library(data.table)
+library(pbapply)
+
+# --- Define text cleaning function ---
+clean_text <- function(text) {
+  text <- tolower(text)
+  text <- gsub("[[:punct:]]", "", text)
+  text <- gsub("\\s+", " ", text)
+  str_trim(text)
+}
+
+# --- Apply cleaning with progress bar ---
+train_df$cleaned_reviews <- pbapply::pbsapply(train_df$reviewText, clean_text)
+val_df$cleaned_reviews   <- pbapply::pbsapply(val_df$reviewText, clean_text)
+test_df$cleaned_reviews  <- pbapply::pbsapply(test_df$reviewText, clean_text)
+
+
+# --- Save results to CSV for reuse ---
+fwrite(train_df, "dl_train_cleaned.csv")
+fwrite(val_df,   "dl_val_cleaned.csv")
+fwrite(test_df,  "dl_test_cleaned.csv")
+
+```
+
+# Python
+
+```{r}
+
+library(reticulate)
+
+# Tell reticulate where to find conda and which env to activate
+use_condaenv(
+  conda     = "C:/Users/User/miniconda3/Scripts/conda.exe",
+  condaenv  = "r-tf",
+  required  = TRUE
+)
+
+py_config()
+```
+
+### Model Defining
+
+```{r}
+# install these once if you haven't already:
+# install.packages("reticulate")
+# reticulate::py_install(c("transformers","tensorflow"), envname = "r-reticulate")
+
+library(reticulate)
+library(dplyr)
+library(tensorflow)
+library(data.table)
+library(pbapply)
+
+# --- Load Cleaned Data ---
+train_df <- fread("dl_train_cleaned.csv")
+val_df   <- fread("dl_val_cleaned.csv")
+test_df  <- fread("dl_test_cleaned.csv")
+
+# 2) import Python modules
+transformers <- import("transformers")
+tf           <- import("tensorflow")
+
+# 3) load tokenizer & model
+tokenizer <- transformers$DistilBertTokenizerFast$from_pretrained(
+  "distilbert-base-uncased"
+)
+model <- transformers$TFDistilBertForSequenceClassification$from_pretrained(
+  "distilbert-base-uncased",
+  num_labels = as.integer(3)
+)
+
+
+# 4) Tokenize all splits (pad/truncate to max_length=200)
+tokenize_batch <- function(texts) {
+  tokenizer(
+    texts,
+    truncation     = TRUE,
+    padding        = "max_length",
+    max_length     = as.integer(200L),
+    return_tensors = "tf"
+  )
+}
+
+train_enc <- tokenize_batch(train_df$cleaned_reviews)
+val_enc   <- tokenize_batch(val_df$cleaned_reviews)
+test_enc  <- tokenize_batch(test_df$cleaned_reviews)
+
+# Prepare x & y for train/val
+train_x <- list(
+  input_ids      = train_enc$input_ids,
+  attention_mask = train_enc$attention_mask
+)
+val_x <- list(
+  input_ids      = val_enc$input_ids,
+  attention_mask = val_enc$attention_mask
+)
+test_x <- list(
+  input_ids      = test_enc$input_ids,
+  attention_mask = test_enc$attention_mask
+)
+
+# 7) Prepare integer label tensors (ensure 0-based)
+#    If your R sentiment is 1,2,3 you must subtract 1 to get 0,1,2
+train_y <- tf$constant(as.integer(train_df$sentiment) - 1L, dtype = tf$int32)
+val_y   <- tf$constant(as.integer(val_df$sentiment)   - 1L, dtype = tf$int32)
+test_y  <- tf$constant(as.integer(test_df$sentiment)  - 1L, dtype = tf$int32)
+
+```
+
+# Test
+
+```{r}
+library(reticulate)
+library(tensorflow)
+library(readr)
+
+
+# Re-import TF & HF
+transformers <- import("transformers")
+tf           <- import("tensorflow")
+
+# Reload model & tokenizer
+tokenizer <- transformers$DistilBertTokenizerFast$from_pretrained("distilbert-base-uncased")
+model     <- transformers$TFDistilBertForSequenceClassification$from_pretrained(
+  "distilbert-base-uncased", num_labels = as.integer(3)
+)
+
+# 1) Now that tf_keras is installed, this compile should succeed
+model$compile(
+  optimizer = tf$keras$optimizers$Adam(learning_rate = 2e-5),
+  loss      = tf$keras$losses$SparseCategoricalCrossentropy(from_logits = TRUE),
+  metrics   = list("accuracy")
+)
+
+# 2) Create a CSVLogger callback
+csv_logger <- tf$keras$callbacks$CSVLogger(
+  "training_log.csv",
+  append    = FALSE,
+  separator = ","
+)
+
+# 3) Fit with a progress bar (verbose = 1) and CSV logging
+history <- model$fit(
+  x               = train_x,
+  y               = train_y,
+  validation_data = list(val_x, val_y),
+  batch_size      = as.integer(16),
+  epochs          = as.integer(3),
+  verbose         = as.integer(1),       # shows the tqdm-like progress
+  callbacks       = list(csv_logger)
+)
+
+# 4) Save training log for inspection later
+training_log <- read_csv("training_log.csv")
+saveRDS(training_log, "training_log.rds")
+
+# 5) Evaluate on test set (progress bar too)
+results <- model$evaluate(
+  x       = test_x,
+  y       = test_y,
+  verbose = as.integer(1)
+)
+names(results) <- c("loss", "accuracy")
+
+# 6) Persist final test metrics
+saveRDS(results, "test_results.rds")
+
+# 7) (Optionally) save the model & tokenizer
+model$save_pretrained("distilbert_sentiment_model")
+tokenizer$save_pretrained("distilbert_sentiment_model")
+
+```
+
+# Reaal
+
+```{r}
+
+# 8) Fit for 3 epochs
+history <- model$fit(
+  x               = train_x,
+  y               = train_y,
+  validation_data = list(val_x, val_y),
+  batch_size      = as.integer(16),
+  epochs          = as.integer(3)
+)
+
+# 9) Evaluate on test set
+results <- model$evaluate(
+  x = test_x,
+  y = test_y
+)
+print(results)
+
+```
+
+# Building Recommender System
+
+**Goal:**
+
+1.  Use classification probabilities (from your logistic model) as a proxy for implicit user ratings.
+2.  Convert these scores into a realRatingMatrix.
+3.  Use collaborative filtering (IBCF or UBCF) on the matrix built from predicted probabilities.
+4.  Use evaluationScheme() for model validation
+
+## Feature Engineering
+
+```{r}
+# --- Load Required Libraries ---
+library(data.table)
+library(dplyr)
+library(tidyr)
+library(recommenderlab)
+
+# Load Processed Data
+df <- fread("Amazon_Reviews_Processed.csv")
+
+df <- df %>%
+  mutate(
+    sentiment_num = case_when(sentiment == "positive" ~ 1,
+                              sentiment == "neutral" ~ 0,
+                              sentiment == "negative" ~ -1),
+    length_num = case_when(length == "small" ~ 1,
+                           length == "medium" ~ 2,
+                           length == "large" ~ 3),
+    target = ifelse(overall >= 4, 1, 0)
+  )
+
+```
+
+| Column          | Purpose                                                                                                                                                              |
+|--------------------------|----------------------------------------------|
+| `target`        | This is the label — a binary variable indicating whether a review is **"positive"** (≥ 4 stars). This is what we're trying to **predict**.                           |
+| `sentiment_num` | This is a **feature** (input). It encodes the `sentiment` label (which was created from the star rating) into numeric form, so it can be used in a model if desired. |
+| `length_num`    | Another **feature** (input). It encodes the length of the review (which we calculated earlier in the Classification Model Section) as a numeric variable.            |
+
+In this context, sentiment_num and length_num are just handcrafted features added to help the classification model.
+
+## Classification Model + Predicted Probabilities
+
+```{r}
+# --- Fit Classification Model (Structured Features Only) ---
+model <- glm(target ~ sentiment_num + length_num + overall,
+             data = df, family = quasibinomial())
+
+# --- Predict Preference Score for Each User-Item ---
+df$predicted_prob <- predict(model, newdata = df, type = "response")
+
+```
+
+## Matrix Construction (Subsample + Scoring)
+
+```{r}
+# --- Create Fake User IDs if Missing ---
+if (!"reviewerID" %in% colnames(df)) {
+  df$reviewerID <- paste0("user", seq_len(nrow(df)))
+}
+
+# --- Sample for Manageability ---
+set.seed(42)
+df_sub <- df %>%
+  filter(reviewerID %in% sample(unique(reviewerID), 300),
+         asin %in% sample(unique(asin), 500))
+
+# --- Build User-Item Matrix of Predicted Scores ---
+rating_df <- df_sub %>%
+  select(reviewerID, asin, predicted_prob) %>%
+  group_by(reviewerID, asin) %>%
+  summarise(score = mean(predicted_prob), .groups = "drop")
+
+rating_mat <- rating_df %>%
+  pivot_wider(names_from = asin, values_from = score, values_fill = 0)
+
+user_ids <- rating_mat$reviewerID
+rating_mat$reviewerID <- NULL
+rating_matrix <- as(as.matrix(rating_mat), "realRatingMatrix")
+rownames(rating_matrix) <- user_ids
+
+
+```
+
+## Clean & Build Evaluation Scheme
+
+```{r}
+# --- Filter Users and Items with Zero Interactions ---
+rating_matrix <- rating_matrix[rowCounts(rating_matrix) > 0, ]
+rating_matrix <- rating_matrix[, colCounts(rating_matrix) > 0]
+
+# --- Evaluation Setup (as taught in recommender-system.html) ---
+set.seed(1031)
+es <- evaluationScheme(rating_matrix, method = "split", train = 0.8, given = 10, goodRating = 0.6)
+
+```
+
+## Train Model + Evaluate
+
+```{r}
+# --- Filter Users and Items with Zero Interactions ---
+rating_matrix <- rating_matrix[rowCounts(rating_matrix) > 0, ]
+rating_matrix <- rating_matrix[, colCounts(rating_matrix) > 0]
+
+# --- Evaluation Setup (as taught in recommender-system.html) ---
+set.seed(1031)
+es <- evaluationScheme(rating_matrix, method = "split", train = 0.8, given = 10, goodRating = 0.6)
+
+```
