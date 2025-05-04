@@ -870,7 +870,40 @@ Cohen’s Kappa (agreement beyond random chance)
 
 # Building Recommender
 
+Content-Based Recommender System
+
+Developing a content-based recommendation system that suggests similar products based on features derived from user reviews. The goal is understanding how customer sentiment and review behavior can guide more meaningful product suggestions.
+
+Method summary:
+
+-   Feature Engineering:
+
+    -   Converted sentiment into a numerical score
+
+        -   positive = 1, neutral = 0.5, negative = 0
+
+    -   Encoded review length as an ordinal score
+
+        -   small \< medium \< large
+
+    -   Combined these with the original star rating to form a feature matrix
+
+-   Normalization and Similarity Calculation:
+
+    -   Utilizing the `scale()` function ensures that all features contribute equally to the similarity calculation, regardless of their original scales. This normalization step is essential before computing cosine similarity, as it prevents features with larger numeric ranges from disproportionately influencing the distance metric
+
+-   Recommendation Logic:
+
+    -   Split into 80% train / 20% test
+
+    -   Randomly picked 3 test items as “queries.”
+
+    -   For each query, retrieved the top 5 train items with highest cosine‑similarity.
+
 ## Baseline Model
+
+### Feature Engineering
+
 ```{r}
 library(data.table)
 library(dplyr)
@@ -884,15 +917,20 @@ data <- fread("Amazon_Reviews_Processed.csv", nrows = 20000)
 data$sentiment_score <- ifelse(data$sentiment == "positive", 1,
                           ifelse(data$sentiment == "neutral", 0.5, 0))
 
+data$length_score <- as.numeric(as.factor(data$length))
+
 data$category <- as.factor(data$category)
 if (nlevels(data$category) > 1) {
   category_dummies <- model.matrix(~ category - 1, data = data)
 } else {
   category_dummies <- NULL
 }
+```
 
-data$length_score <- as.numeric(as.factor(data$length))
+### Feature Matrix & Normalization
 
+```{r}
+# Combine all features into one matrix
 if (!is.null(category_dummies)) {
   features <- cbind(
     rating = data$overall,
@@ -908,17 +946,31 @@ if (!is.null(category_dummies)) {
   )
 }
 
+# Scale features to mean=0, sd=1
 features_norm <- scale(features)
+```
 
+### Cosine Similiarty
+
+```{r}
 #Define Similarity Metric
 similarity_matrix <- 1 - as.matrix(dist(features_norm, method = "cosine"))
+```
 
+### Train/Test Split
+
+```{r}
 #Create a Train/Test Split
 set.seed(42)
 n <- nrow(data)
 train_idx <- sample(1:n, size = 0.8 * n)
 test_idx <- setdiff(1:n, train_idx)
+```
 
+### Generate Recommendation
+
+```{r}
+# Draw 3 random test items to query
 query_indices <- sample(test_idx, 3)
 recommendations <- lapply(query_indices, function(i) {
   sim_vec <- similarity_matrix[i, train_idx]
@@ -934,7 +986,8 @@ recommendation_result <- do.call(rbind, recommendations)
 print(recommendation_result)
 ```
 
-### Plot
+### Result Plot
+
 ```{r}
 example_sim <- similarity_matrix[query_indices[1], train_idx]
 example_df <- data.frame(
@@ -948,23 +1001,29 @@ ggplot(example_df, aes(x = similarity)) +
   theme_minimal()
 ```
 
-
 ## LR Derived Model
 
 Here we take the LR‐derived “negative‑sentiment” probability (prob_neg), append it to our existing item features, re‐scale everything, and rebuild the cosine‐similarity matrix. Then we perform a train/test split and, for a handful of held‑out (“query”) items, pull the top‑5 most similar training items as our recommendations.
+
+### Predict LR‑Derived Probabilities
+
 ```{r}
-# 1. Predict probabilities on your full dataset
-#    (or just on your train + test split, whichever you’ll compare)
+# Predict probabilities on the full dataset
+
 prob_neg <- predict(mod, newdata = dat_feat, type = "response")
 #    prob_neg[i] = P(overall<4 | TF‑IDF of review i)
 
 data$ID <- seq_len(nrow(data))
 
-# 2. Attach back to your original `data` frame by ID
+# Attach back to the original `data` frame by ID
 data_with_prob <- data %>%
-  mutate(prob_neg = prob_neg[match(ID, dat_feat$ID)]) 
+  mutate(prob_neg = prob_neg[match(ID, dat_feat$ID)])
+```
 
-# 3. Now rebuild your recommender features:
+### Feature Matrix & Normalization
+
+```{r}
+# Now rebuild the recommender features:
 #    rating, sentiment_score, length_score, category_dummies, AND prob_neg
 feat2 <- cbind(
   rating     = data_with_prob$overall,
@@ -975,13 +1034,14 @@ feat2 <- cbind(
 )
 feat2_norm <- scale(feat2)
 
-# 4. Recompute cosine similarities and recommendations as before
+# Recompute cosine similarities and recommendations 
 sim2 <- 1 - as.matrix(dist(feat2_norm, method = "cosine"))
-
 ```
 
+### Train/Test Split
+
 ```{r}
-# (Re)create your train/test split if you haven’t already
+{# (Re)create your train/test split if you haven’t already}
 set.seed(42)
 n          <- nrow(data_with_prob)
 train_idx  <- sample(1:n, size = 0.8 * n)
@@ -989,7 +1049,11 @@ test_idx   <- setdiff(1:n, train_idx)
 
 # Pick a few test items to “ask” for recommendations
 query_indices <- sample(test_idx, 3)
+```
 
+### Generate Recommendation
+
+```{r}
 # For each query, pull the top‑5 most similar train items
 recommendations2 <- lapply(query_indices, function(i) {
   # similarities from query i to all train items
@@ -1011,8 +1075,8 @@ recommendation_result2 <- do.call(rbind, recommendations2)
 print(recommendation_result2)
 ```
 
+### Result Plot
 
-### Plot
 ```{r}
 # 1. Re‐create example_df for sim2
 example_sim <- sim2[ query_indices[1], train_idx ]
@@ -1036,338 +1100,15 @@ print(p)
 ```
 
 ## Evaluation
+
 The first histogram is our baseline content‑based recommender (rating + sentiment + length + category only), and the second histogram is the enhanced recommender after we injected our logistic‑regression probability feature.
 
+Plot 1
 
-Plot 1 (baseline) shows almost all similarities clustered in the negative/near‑zero region, with only a tiny spike up near +1.0.
+-   (baseline) shows almost all similarities clustered in the negative/near‑zero region, with only a tiny spike up near +1.0.
 
-Plot 2 (with our prob_neg feature) has a visibly fatter right‑hand tail (more items in the +0.2 to +1.0 range), meaning more candidates are judged “similar.”
+Plot 2
+
+-   (with our prob_neg feature) has a visibly fatter right‑hand tail (more items in the +0.2 to +1.0 range), meaning more candidates are judged “similar.”
 
 Since a richer positive tail generally translates to more—and potentially better—recommendation candidates, Plot 2 (the second one) demonstrates the improved recommender.
-
-
-# EVERYTHING BELOW THIS WONT BE ON THE FINAL HTML. THOSE ARE STILL UNDER TESTING
-
-------------------------------------------------------------------------
-
-## Deep Learning
-
-For classical text‐based models (like Logistic Regression), we wanted to strip out punctuation, drop stop words (except negations), lowercase everything, etc., because we were turning text into “bags of words” or TF‐IDF vectors.
-
-With a transformer‐based model like DistilBERT, however, we do not want to throw away punctuation, remove stop words, or pre‐tokenize yourself. Instead we feed it the raw or lightly cleaned text and let its own subword tokenizer:
-
-Preserve punctuation and special tokens that carry meaning (e.g. negation, contractions, emojis).
-
-Learn word pieces (e.g. “walking” → “walk” + “##ing”) so we don’t have to manually handle every morphological variant.
-
-### Preparing Data
-
-```{r}
-#| echo: true
-library(dplyr)
-library(stringr)
-library(data.table)
-library(pbapply)
-
-# --- Define text cleaning function ---
-clean_text <- function(text) {
-  text <- tolower(text)
-  text <- gsub("[[:punct:]]", "", text)
-  text <- gsub("\\s+", " ", text)
-  str_trim(text)
-}
-
-# --- Apply cleaning with progress bar ---
-train_df$cleaned_reviews <- pbapply::pbsapply(train_df$reviewText, clean_text)
-val_df$cleaned_reviews   <- pbapply::pbsapply(val_df$reviewText, clean_text)
-test_df$cleaned_reviews  <- pbapply::pbsapply(test_df$reviewText, clean_text)
-
-
-# --- Save results to CSV for reuse ---
-fwrite(train_df, "dl_train_cleaned.csv")
-fwrite(val_df,   "dl_val_cleaned.csv")
-fwrite(test_df,  "dl_test_cleaned.csv")
-
-```
-
-# Python
-
-```{r}
-
-library(reticulate)
-
-# Tell reticulate where to find conda and which env to activate
-use_condaenv(
-  conda     = "C:/Users/User/miniconda3/Scripts/conda.exe",
-  condaenv  = "r-tf",
-  required  = TRUE
-)
-
-py_config()
-```
-
-### Model Defining
-
-```{r}
-# install these once if you haven't already:
-# install.packages("reticulate")
-# reticulate::py_install(c("transformers","tensorflow"), envname = "r-reticulate")
-
-library(reticulate)
-library(dplyr)
-library(tensorflow)
-library(data.table)
-library(pbapply)
-
-# --- Load Cleaned Data ---
-train_df <- fread("dl_train_cleaned.csv")
-val_df   <- fread("dl_val_cleaned.csv")
-test_df  <- fread("dl_test_cleaned.csv")
-
-# 2) import Python modules
-transformers <- import("transformers")
-tf           <- import("tensorflow")
-
-# 3) load tokenizer & model
-tokenizer <- transformers$DistilBertTokenizerFast$from_pretrained(
-  "distilbert-base-uncased"
-)
-model <- transformers$TFDistilBertForSequenceClassification$from_pretrained(
-  "distilbert-base-uncased",
-  num_labels = as.integer(3)
-)
-
-
-# 4) Tokenize all splits (pad/truncate to max_length=200)
-tokenize_batch <- function(texts) {
-  tokenizer(
-    texts,
-    truncation     = TRUE,
-    padding        = "max_length",
-    max_length     = as.integer(200L),
-    return_tensors = "tf"
-  )
-}
-
-train_enc <- tokenize_batch(train_df$cleaned_reviews)
-val_enc   <- tokenize_batch(val_df$cleaned_reviews)
-test_enc  <- tokenize_batch(test_df$cleaned_reviews)
-
-# Prepare x & y for train/val
-train_x <- list(
-  input_ids      = train_enc$input_ids,
-  attention_mask = train_enc$attention_mask
-)
-val_x <- list(
-  input_ids      = val_enc$input_ids,
-  attention_mask = val_enc$attention_mask
-)
-test_x <- list(
-  input_ids      = test_enc$input_ids,
-  attention_mask = test_enc$attention_mask
-)
-
-# 7) Prepare integer label tensors (ensure 0-based)
-#    If your R sentiment is 1,2,3 you must subtract 1 to get 0,1,2
-train_y <- tf$constant(as.integer(train_df$sentiment) - 1L, dtype = tf$int32)
-val_y   <- tf$constant(as.integer(val_df$sentiment)   - 1L, dtype = tf$int32)
-test_y  <- tf$constant(as.integer(test_df$sentiment)  - 1L, dtype = tf$int32)
-
-```
-
-# Test
-
-```{r}
-library(reticulate)
-library(tensorflow)
-library(readr)
-
-
-# Re-import TF & HF
-transformers <- import("transformers")
-tf           <- import("tensorflow")
-
-# Reload model & tokenizer
-tokenizer <- transformers$DistilBertTokenizerFast$from_pretrained("distilbert-base-uncased")
-model     <- transformers$TFDistilBertForSequenceClassification$from_pretrained(
-  "distilbert-base-uncased", num_labels = as.integer(3)
-)
-
-# 1) Now that tf_keras is installed, this compile should succeed
-model$compile(
-  optimizer = tf$keras$optimizers$Adam(learning_rate = 2e-5),
-  loss      = tf$keras$losses$SparseCategoricalCrossentropy(from_logits = TRUE),
-  metrics   = list("accuracy")
-)
-
-# 2) Create a CSVLogger callback
-csv_logger <- tf$keras$callbacks$CSVLogger(
-  "training_log.csv",
-  append    = FALSE,
-  separator = ","
-)
-
-# 3) Fit with a progress bar (verbose = 1) and CSV logging
-history <- model$fit(
-  x               = train_x,
-  y               = train_y,
-  validation_data = list(val_x, val_y),
-  batch_size      = as.integer(16),
-  epochs          = as.integer(3),
-  verbose         = as.integer(1),       # shows the tqdm-like progress
-  callbacks       = list(csv_logger)
-)
-
-# 4) Save training log for inspection later
-training_log <- read_csv("training_log.csv")
-saveRDS(training_log, "training_log.rds")
-
-# 5) Evaluate on test set (progress bar too)
-results <- model$evaluate(
-  x       = test_x,
-  y       = test_y,
-  verbose = as.integer(1)
-)
-names(results) <- c("loss", "accuracy")
-
-# 6) Persist final test metrics
-saveRDS(results, "test_results.rds")
-
-# 7) (Optionally) save the model & tokenizer
-model$save_pretrained("distilbert_sentiment_model")
-tokenizer$save_pretrained("distilbert_sentiment_model")
-
-```
-
-# Reaal
-
-```{r}
-
-# 8) Fit for 3 epochs
-history <- model$fit(
-  x               = train_x,
-  y               = train_y,
-  validation_data = list(val_x, val_y),
-  batch_size      = as.integer(16),
-  epochs          = as.integer(3)
-)
-
-# 9) Evaluate on test set
-results <- model$evaluate(
-  x = test_x,
-  y = test_y
-)
-print(results)
-
-```
-
-# Building Recommender System
-
-**Goal:**
-
-1.  Use classification probabilities (from your logistic model) as a proxy for implicit user ratings.
-2.  Convert these scores into a realRatingMatrix.
-3.  Use collaborative filtering (IBCF or UBCF) on the matrix built from predicted probabilities.
-4.  Use evaluationScheme() for model validation
-
-## Feature Engineering
-
-```{r}
-# --- Load Required Libraries ---
-library(data.table)
-library(dplyr)
-library(tidyr)
-library(recommenderlab)
-
-# Load Processed Data
-df <- fread("Amazon_Reviews_Processed.csv")
-
-df <- df %>%
-  mutate(
-    sentiment_num = case_when(sentiment == "positive" ~ 1,
-                              sentiment == "neutral" ~ 0,
-                              sentiment == "negative" ~ -1),
-    length_num = case_when(length == "small" ~ 1,
-                           length == "medium" ~ 2,
-                           length == "large" ~ 3),
-    target = ifelse(overall >= 4, 1, 0)
-  )
-
-```
-
-| Column          | Purpose                                                                                                                                                              |
-|--------------------------|----------------------------------------------|
-| `target`        | This is the label — a binary variable indicating whether a review is **"positive"** (≥ 4 stars). This is what we're trying to **predict**.                           |
-| `sentiment_num` | This is a **feature** (input). It encodes the `sentiment` label (which was created from the star rating) into numeric form, so it can be used in a model if desired. |
-| `length_num`    | Another **feature** (input). It encodes the length of the review (which we calculated earlier in the Classification Model Section) as a numeric variable.            |
-
-In this context, sentiment_num and length_num are just handcrafted features added to help the classification model.
-
-## Classification Model + Predicted Probabilities
-
-```{r}
-# --- Fit Classification Model (Structured Features Only) ---
-model <- glm(target ~ sentiment_num + length_num + overall,
-             data = df, family = quasibinomial())
-
-# --- Predict Preference Score for Each User-Item ---
-df$predicted_prob <- predict(model, newdata = df, type = "response")
-
-```
-
-## Matrix Construction (Subsample + Scoring)
-
-```{r}
-# --- Create Fake User IDs if Missing ---
-if (!"reviewerID" %in% colnames(df)) {
-  df$reviewerID <- paste0("user", seq_len(nrow(df)))
-}
-
-# --- Sample for Manageability ---
-set.seed(42)
-df_sub <- df %>%
-  filter(reviewerID %in% sample(unique(reviewerID), 300),
-         asin %in% sample(unique(asin), 500))
-
-# --- Build User-Item Matrix of Predicted Scores ---
-rating_df <- df_sub %>%
-  select(reviewerID, asin, predicted_prob) %>%
-  group_by(reviewerID, asin) %>%
-  summarise(score = mean(predicted_prob), .groups = "drop")
-
-rating_mat <- rating_df %>%
-  pivot_wider(names_from = asin, values_from = score, values_fill = 0)
-
-user_ids <- rating_mat$reviewerID
-rating_mat$reviewerID <- NULL
-rating_matrix <- as(as.matrix(rating_mat), "realRatingMatrix")
-rownames(rating_matrix) <- user_ids
-
-
-```
-
-## Clean & Build Evaluation Scheme
-
-```{r}
-# --- Filter Users and Items with Zero Interactions ---
-rating_matrix <- rating_matrix[rowCounts(rating_matrix) > 0, ]
-rating_matrix <- rating_matrix[, colCounts(rating_matrix) > 0]
-
-# --- Evaluation Setup (as taught in recommender-system.html) ---
-set.seed(1031)
-es <- evaluationScheme(rating_matrix, method = "split", train = 0.8, given = 10, goodRating = 0.6)
-
-```
-
-## Train Model + Evaluate
-
-```{r}
-# --- Filter Users and Items with Zero Interactions ---
-rating_matrix <- rating_matrix[rowCounts(rating_matrix) > 0, ]
-rating_matrix <- rating_matrix[, colCounts(rating_matrix) > 0]
-
-# --- Evaluation Setup (as taught in recommender-system.html) ---
-set.seed(1031)
-es <- evaluationScheme(rating_matrix, method = "split", train = 0.8, given = 10, goodRating = 0.6)
-
-```
